@@ -6,13 +6,13 @@ import torch.nn as nn
 import torchvision.utils as vutils
 from zipfile import ZipFile
 
-# --- Configuration (from your training script) ---
-nc = 3      # Number of channels (RGB)
+# --- Configuration (from your script) ---
+nc = 3      # Number of channels (assumed RGB for consistency)
 nz = 100    # Size of latent vector
 ngf = 64    # Generator feature map size
 # --- End of Configuration ---
 
-# --- Generator Model (Copied directly from your training script) ---
+# --- Generator Model (Copied directly from your script) ---
 class Generator(nn.Module):
     def __init__(self):
         super(Generator, self).__init__()
@@ -38,19 +38,14 @@ class Generator(nn.Module):
 
 # --- Main Generation Function ---
 def generate_images(model_path, output_zip_path, num_images):
-    """
-    Loads a pre-trained GAN model and generates a batch of images,
-    saving them to a zip file.
-    """
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"GAN model not found at: {model_path}")
 
     print(f"Loading pre-trained GAN from: {model_path}")
     
-    # Set up the device (CPU or GPU)
     device = torch.device("cpu")
 
-    # Initialize your Generator network and load the saved state
+    # Initialize Generator and load the saved state
     netG = Generator().to(device)
     netG.load_state_dict(torch.load(model_path, map_location=device))
     netG.eval()
@@ -59,25 +54,30 @@ def generate_images(model_path, output_zip_path, num_images):
     print(f"Generating {num_images} synthetic images...")
     with torch.no_grad():
         noise = torch.randn(num_images, nz, 1, 1, device=device)
-        fake_images = netG(noise).detach().cpu()
+        # Renamed 'fake_images' to 'generated_images'
+        all_generated_images = netG(noise).detach().cpu()
 
     # --- Save images to a zip file ---
-    temp_dir = "temp_images_output"
+    temp_dir = "temp_image_generation"
     os.makedirs(temp_dir, exist_ok=True)
 
-    for i in range(num_images):
-        vutils.save_image(fake_images[i], os.path.join(temp_dir, f'image_{i+1}.png'), normalize=True)
+    # Determine how many images to show in the grid. Max 64 (8x8).
+    images_in_grid = min(num_images, 64) 
+    grid_tensor = all_generated_images[:images_in_grid]
+
+    # Renamed the output file
+    grid_image_filename = "synthetic_image_grid.png"
+    vutils.save_image(grid_tensor, os.path.join(temp_dir, grid_image_filename), normalize=True, nrow=8)
 
     with ZipFile(output_zip_path, 'w') as zipf:
-        for file in os.listdir(temp_dir):
-            zipf.write(os.path.join(temp_dir, file), arcname=file)
+        zipf.write(os.path.join(temp_dir, grid_image_filename), arcname=grid_image_filename)
 
     # Clean up temporary files
     for file in os.listdir(temp_dir):
         os.remove(os.path.join(temp_dir, file))
     os.rmdir(temp_dir)
     
-    print(f"Synthetic images saved to {output_zip_path}")
+    print(f"Synthetic image grid saved to {output_zip_path}")
 
 
 if __name__ == "__main__":
