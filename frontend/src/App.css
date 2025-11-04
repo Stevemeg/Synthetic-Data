@@ -1,0 +1,18 @@
+import React from 'react';
+import { Box, Button, Paper, Typography } from '@mui/material';
+
+export const ImageGenerator = () => {
+  const handleGenerate = () => console.log('Generate Image Data');
+
+  return (
+    <Paper elevation={3} sx={{ padding: 4, margin: 4 }}>
+      <Typography variant="h4" gutterBottom>🖼️ Medical Imaging Generator</Typography>
+      {/* Form fields will go here */}
+      <Box sx={{ mt: 5, textAlign: 'center' }}>
+        <Button variant="contained" color="primary" size="large" onClick={handleGenerate}>
+          Generate Images
+        </Button>
+      </Box>
+    </Paper>
+  );
+};
