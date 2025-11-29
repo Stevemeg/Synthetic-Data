@@ -1,0 +1,10 @@
+Flask
+Flask-Cors
+gunicorn
+pandas
+numpy<2
+neurokit2==0.2.7
+scikit-learn
+torch --index-url https://download.pytorch.org/whl/cpu
+torchvision --index-url https://download.pytorch.org/whl/cpu
+sdv
