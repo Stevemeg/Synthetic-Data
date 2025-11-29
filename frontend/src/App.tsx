@@ -59,13 +59,17 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState<{ open: boolean, message: string, severity: 'success' | 'error' }>({ open: false, message: '', severity: 'success' });
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  // Use the environment variable, or fallback to localhost for development
+  // This ensures it works both locally and on the deployed site
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
+
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
   const handleGenerate = async (config: any, file?: File) => {
     setLoading(true);
-    const endpoint = `http://127.0.0.1:5000/api/generate/${config.type}`;
+    const endpoint = `${apiUrl}/api/generate/${config.type}`;
 
     const formData = new FormData();
     formData.append('config', JSON.stringify(config));
