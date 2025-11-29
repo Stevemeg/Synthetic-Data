@@ -6,52 +6,34 @@ import json
 import sys
 import subprocess
 
-# --- DEBUGGING BLOCK (This helps us find the file) ---
-print("--- DEBUGGING PATHS ---")
-CURRENT_FILE = os.path.abspath(__file__)
-BACKEND_DIR = os.path.dirname(CURRENT_FILE)
-PROJECT_ROOT = os.path.dirname(BACKEND_DIR)
-
-print(f"Current File: {CURRENT_FILE}")
-print(f"Backend Dir: {BACKEND_DIR}")
-print(f"Project Root (Calculated): {PROJECT_ROOT}")
-
-try:
-    print(f"Files in Project Root: {os.listdir(PROJECT_ROOT)}")
-except Exception as e:
-    print(f"Could not list project root: {e}")
-print("-----------------------")
-
-# Add root to path so we can import
-if PROJECT_ROOT not in sys.path:
-    sys.path.append(PROJECT_ROOT)
-
-# Try importing and print success/fail
+# --- Import the script directly (works because it's now in the same folder) ---
 try:
     from run_pipeline import run_full_pipeline
-    print("SUCCESS: run_pipeline imported successfully!")
 except ImportError as e:
-    print(f"CRITICAL ERROR: Could not import run_pipeline. Error: {e}")
-# -----------------------------------------------------
+    print(f"CRITICAL ERROR: Could not import run_pipeline: {e}")
 
 app = Flask(__name__)
 CORS(app)
 
 # --- Configuration ---
-GENERATED_DATA_DIR = os.path.join(BACKEND_DIR, "generated_data")
-UPLOADS_DIR = os.path.join(BACKEND_DIR, "uploads")
-MODELS_DIR = os.path.join(BACKEND_DIR, "models")
-PRETRAINED_MODELS_DIR = PROJECT_ROOT
+# Everything is now relative to the current directory (backend)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+GENERATED_DATA_DIR = os.path.join(BASE_DIR, "generated_data")
+UPLOADS_DIR = os.path.join(BASE_DIR, "uploads")
+MODELS_DIR = os.path.join(BASE_DIR, "models")
+
+# Since we moved the models into backend, they are here:
+PRETRAINED_MODELS_DIR = BASE_DIR 
 
 os.makedirs(GENERATED_DATA_DIR, exist_ok=True)
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 os.makedirs(MODELS_DIR, exist_ok=True)
 
-# --- SCRIPT PATHS ---
-TABULAR_SCRIPT = os.path.join(PROJECT_ROOT, "generate_tabular.py")
-IMAGING_SCRIPT = os.path.join(PROJECT_ROOT, "generate_images.py")
-GENOMIC_SCRIPT = os.path.join(PROJECT_ROOT, "generate_genomic.py")
-TIME_SERIES_SCRIPT = os.path.join(PROJECT_ROOT, "run_pipeline.py")
+# --- SCRIPT PATHS (Now in the same folder) ---
+TABULAR_SCRIPT = os.path.join(BASE_DIR, "generate_tabular.py")
+IMAGING_SCRIPT = os.path.join(BASE_DIR, "generate_images.py")
+GENOMIC_SCRIPT = os.path.join(BASE_DIR, "generate_genomic.py")
+TIME_SERIES_SCRIPT = os.path.join(BASE_DIR, "run_pipeline.py")
 PYTHON_EXECUTABLE = sys.executable
 
 # --- Helper Function ---
@@ -70,6 +52,7 @@ def get_config_and_file():
     return config, source_file_path, None, None
 
 # --- API Routes ---
+
 @app.route('/')
 def home():
     return "Medical Data Generator API is Running!"
@@ -77,10 +60,6 @@ def home():
 @app.route('/generated/<filename>')
 def generated_file(filename):
     return send_from_directory(GENERATED_DATA_DIR, filename)
-
-# ... (Paste the rest of your routes: tabular, imaging, genomic, timeseries here) ...
-# To save space, I assume you keep the route logic the same as the previous step.
-# Just make sure to COPY the route functions (generate_tabular, etc.) from the previous code block.
 
 @app.route('/api/generate/tabular', methods=['POST'])
 def generate_tabular():
@@ -102,11 +81,11 @@ def generate_tabular():
                  model_filename = 'heart_disease_model.pkl'
              else:
                  model_filename = 'diabetes_model.pkl'
+             
              model_path = os.path.join(PRETRAINED_MODELS_DIR, model_filename)
-             # Add model path argument if your script supports it (update generate_tabular.py if needed)
-             # command.extend(["--model_path", model_path]) 
+             command.extend(["--model_path", model_path]) 
 
-        result = subprocess.run(command, capture_output=True, text=True, cwd=PROJECT_ROOT)
+        result = subprocess.run(command, capture_output=True, text=True, cwd=BASE_DIR)
         
         if result.returncode != 0:
             return jsonify({"status": "error", "message": "Script failed.", "details": result.stderr}), 500
@@ -132,7 +111,7 @@ def generate_timeseries():
         model_filename = f"vae_model_{uuid.uuid4().hex}.pt"
         model_path = os.path.join(MODELS_DIR, model_filename)
         
-        # Run imported function
+        # Run imported function directly
         run_full_pipeline(input_file=source_file_path, output_file=output_path, model_output_file=model_path)
         
         if not os.path.exists(output_path):
@@ -141,7 +120,7 @@ def generate_timeseries():
         download_url = f"{request.url_root}generated/{output_filename}"
         return jsonify({"status": "success", "message": "Data generated successfully.", "fileUrl": download_url})
     except Exception as e:
-        return jsonify({"status": "error", "message": "An error occurred.", "details": str(e)}), 500
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/api/generate/genomic', methods=['POST'])
 def generate_genomic():
@@ -154,9 +133,11 @@ def generate_genomic():
         output_path = os.path.join(GENERATED_DATA_DIR, output_filename)
         num_sequences = config.get('count', 100)
         command = [PYTHON_EXECUTABLE, GENOMIC_SCRIPT, "--input_file", source_file_path, "--output_file", output_path, "--count", str(num_sequences)]
-        result = subprocess.run(command, capture_output=True, text=True, cwd=PROJECT_ROOT)
+        result = subprocess.run(command, capture_output=True, text=True, cwd=BASE_DIR)
+        
         if result.returncode != 0:
             return jsonify({"status": "error", "message": "Script failed.", "details": result.stderr}), 500
+            
         download_url = f"{request.url_root}generated/{output_filename}"
         return jsonify({"status": "success", "message": "Data generated.", "fileUrl": download_url})
     except Exception as e:
@@ -167,8 +148,10 @@ def generate_imaging():
     try:
         config, _, error_response, status_code = get_config_and_file()
         if error_response: return error_response, status_code
+
         modality = config.get('modality')
         num_images = config.get('count', 10)
+
         if modality == 'MRI':
             model_filename = 'generator_brain.pth'
         elif modality == 'X-Ray':
@@ -177,15 +160,27 @@ def generate_imaging():
             model_filename = 'generator_skin.pth'
         else:
             return jsonify({"status": "error", "message": "Invalid modality selected."}), 400
+
         model_path = os.path.join(PRETRAINED_MODELS_DIR, model_filename)
         output_filename = f"imaging_output_{uuid.uuid4().hex}.zip"
         output_path = os.path.join(GENERATED_DATA_DIR, output_filename)
-        command = [PYTHON_EXECUTABLE, IMAGING_SCRIPT, "--model_path", model_path, "--output_zip_path", output_path, "--count", str(num_images)]
-        result = subprocess.run(command, capture_output=True, text=True, cwd=PROJECT_ROOT)
+
+        command = [
+            PYTHON_EXECUTABLE,
+            IMAGING_SCRIPT,
+            "--model_path", model_path,
+            "--output_zip_path", output_path,
+            "--count", str(num_images)
+        ]
+        
+        result = subprocess.run(command, capture_output=True, text=True, cwd=BASE_DIR)
+        
         if result.returncode != 0:
             return jsonify({"status": "error", "message": "Script failed.", "details": result.stderr}), 500
+
         download_url = f"{request.url_root}generated/{output_filename}"
         return jsonify({"status": "success", "message": "Data generated.", "fileUrl": download_url})
+
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
