@@ -11,7 +11,7 @@ import {
   TextField,
   Typography,
   Chip,
-  Grid
+  Stack // Switched from Grid to Stack for stability
 } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import ImageSearchIcon from '@mui/icons-material/ImageSearch';
@@ -28,7 +28,6 @@ export const ImageGenerator = ({ onGenerate }: { onGenerate: (config: any, file?
   };
 
   const handleGenerateClick = () => {
-    // Ensure count is a valid number before sending
     const finalCount = count > 0 ? count : 1;
     onGenerate({ type: 'imaging', count: finalCount, modality }, selectedFile || undefined);
   };
@@ -36,6 +35,7 @@ export const ImageGenerator = ({ onGenerate }: { onGenerate: (config: any, file?
   return (
     <Card sx={{ mt: 2 }}>
       <CardContent sx={{ p: 4 }}>
+        {/* Header Section */}
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
           <ImageSearchIcon sx={{ fontSize: '2.5rem', mr: 1, color: 'primary.main' }} />
           <Typography variant="h4" gutterBottom align="center" sx={{ mb: 0 }}>
@@ -43,26 +43,27 @@ export const ImageGenerator = ({ onGenerate }: { onGenerate: (config: any, file?
           </Typography>
         </Box>
 
-        <Grid container spacing={3} sx={{ alignItems: 'center' }}>
-          <Grid item xs={12}>
-            <Box sx={{ p: 2, border: '1px dashed grey', borderRadius: 1, textAlign: 'center' }}>
-              <Button component="label" variant="outlined" startIcon={<UploadFileIcon />}>
-                Upload Sample Image (Optional)
-                <input type="file" hidden accept="image/*" onChange={handleFileChange} />
-              </Button>
-              {selectedFile && (
-                <Chip label={selectedFile.name} onDelete={() => setSelectedFile(null)} sx={{ mt: 2, ml: 2 }} />
-              )}
-            </Box>
-          </Grid>
+        {/* Main Form Layout using Stack */}
+        <Stack spacing={3}>
+          
+          {/* File Upload Section */}
+          <Box sx={{ p: 2, border: '1px dashed grey', borderRadius: 1, textAlign: 'center' }}>
+            <Button component="label" variant="outlined" startIcon={<UploadFileIcon />}>
+              Upload Sample Image (Optional)
+              <input type="file" hidden accept="image/*" onChange={handleFileChange} />
+            </Button>
+            {selectedFile && (
+              <Chip label={selectedFile.name} onDelete={() => setSelectedFile(null)} sx={{ mt: 2, ml: 2 }} />
+            )}
+          </Box>
 
-          <Grid item xs={12} sm={6}>
+          {/* Controls Row: Stack switches to row direction on bigger screens */}
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
             <TextField
               label="Number of Images to Generate"
               type="number"
               variant="outlined"
               value={count}
-              // Ensure value doesn't drop below 1 visually, handle NaN
               onChange={(e) => {
                  const val = parseInt(e.target.value, 10);
                  setCount(isNaN(val) ? 0 : val);
@@ -70,9 +71,7 @@ export const ImageGenerator = ({ onGenerate }: { onGenerate: (config: any, file?
               inputProps={{ min: 1 }}
               fullWidth
             />
-          </Grid>
 
-          <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Modality</InputLabel>
               <Select variant="outlined" value={modality} label="Modality" onChange={(e) => setModality(e.target.value)}>
@@ -81,9 +80,11 @@ export const ImageGenerator = ({ onGenerate }: { onGenerate: (config: any, file?
                 <MenuItem value="Skin">Skin Lesion</MenuItem>
               </Select>
             </FormControl>
-          </Grid>
-        </Grid>
+          </Stack>
 
+        </Stack>
+
+        {/* Generate Button */}
         <Box sx={{ mt: 4, textAlign: 'center' }}>
           <Button variant="contained" color="primary" size="large" onClick={handleGenerateClick} disabled={count < 1}>
             Generate Images
