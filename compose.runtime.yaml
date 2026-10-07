@@ -1,0 +1,64 @@
+# Production-shaped LOCAL verification, intentionally HTTP + development fixture IdP.
+# Real deployments require APP_ENV=production, HTTPS and maintained external services.
+x-runtime: &runtime
+  APP_ENV: development
+  AUTH_MODE: oidc
+  DATABASE_URL: ${CONTAINER_DATABASE_URL:?Set the container PostgreSQL URL in ignored .env}
+  ARTIFACT_STORAGE_BACKEND: s3
+  S3_ENDPOINT: http://minio:9000
+  S3_BUCKET: ${S3_BUCKET:?Create the private bucket first}
+  S3_ACCESS_KEY: ${S3_ACCESS_KEY:?Set local storage credentials}
+  S3_SECRET_KEY: ${S3_SECRET_KEY:?Set local storage credentials}
+  OIDC_ISSUER: http://127.0.0.1:8180/realms/medsynth-development
+  OIDC_INTERNAL_ORIGIN: http://keycloak:8080
+  OIDC_CLIENT_ID: medsynth-guard
+  OIDC_REDIRECT_URI: http://127.0.0.1:5000/api/v1/auth/callback
+  FRONTEND_URL: http://127.0.0.1:8088
+  CORS_ORIGINS: http://127.0.0.1:8088
+  SESSION_SECRET: ${SESSION_SECRET:?Generate a session signing secret}
+  METRICS_TOKEN: ${METRICS_TOKEN:?Generate an internal metrics token}
+  UPLOAD_DIR: /tmp/uploads
+services:
+  api:
+    image: medsynth-api:0.6.0
+    build: { context: ., dockerfile: ops/Dockerfile.backend, target: api }
+    environment: *runtime
+    ports: ["127.0.0.1:5000:5000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      minio: { condition: service_healthy }
+      keycloak: { condition: service_started }
+    read_only: true
+    tmpfs: ["/tmp:uid=10001,gid=10001,mode=1770"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    restart: unless-stopped
+  worker:
+    image: medsynth-worker:0.6.0
+    build: { context: ., dockerfile: ops/Dockerfile.backend, target: worker }
+    environment:
+      <<: *runtime
+      WORKER_METRICS_PORT: "9091"
+    depends_on:
+      api: { condition: service_healthy }
+    read_only: true
+    tmpfs: ["/tmp:uid=10001,gid=10001,mode=1770", "/app/backend/.work:uid=10001,gid=10001,mode=1770"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    restart: unless-stopped
+  frontend:
+    image: medsynth-frontend:0.6.0
+    build: { context: ., dockerfile: ops/Dockerfile.frontend }
+    ports: ["127.0.0.1:8088:8080"]
+    depends_on:
+      api: { condition: service_healthy }
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    restart: unless-stopped
+  migration:
+    image: medsynth-api:0.6.0
+    profiles: [maintenance]
+    environment: *runtime
+    command: ["python", "-m", "alembic", "upgrade", "head"]
+    depends_on:
+      postgres: { condition: service_healthy }

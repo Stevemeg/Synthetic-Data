@@ -1,0 +1,32 @@
+# Development-only identity/object-store verification. Never expose these ports publicly.
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.8.0
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${OIDC_DEV_ADMIN_USER:-development-operator}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${OIDC_DEV_ADMIN_PASSWORD:?Generate a local OIDC_DEV_ADMIN_PASSWORD}
+      KC_HOSTNAME: http://127.0.0.1:8180
+      KC_HEALTH_ENABLED: "true"
+    ports: ["127.0.0.1:8180:8080"]
+    volumes:
+      - ./ops/keycloak/realm.json:/opt/keycloak/data/import/realm.json:ro
+      - keycloak_dev_data:/opt/keycloak/data
+    mem_limit: 1g
+  minio:
+    image: medsynth-minio-development:2025-10-15
+    build: { context: ., dockerfile: ops/minio/Dockerfile }
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:?Generate a local S3_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:?Generate a local S3_SECRET_KEY}
+    ports: ["127.0.0.1:9000:9000", "127.0.0.1:9001:9001"]
+    volumes: ["minio_dev_data:/data"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+volumes:
+  keycloak_dev_data:
+  minio_dev_data:

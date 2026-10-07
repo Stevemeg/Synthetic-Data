@@ -1,0 +1,2 @@
+# Compatibility entry point; backend/requirements.txt is authoritative.
+-r backend/requirements.txt

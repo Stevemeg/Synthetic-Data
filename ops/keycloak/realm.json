@@ -1,0 +1,25 @@
+{
+  "realm": "medsynth-development",
+  "enabled": true,
+  "displayName": "MedSynth Guard development identity",
+  "registrationAllowed": false,
+  "sslRequired": "none",
+  "clients": [{
+    "clientId": "medsynth-guard",
+    "name": "MedSynth Guard local development",
+    "enabled": true,
+    "publicClient": true,
+    "standardFlowEnabled": true,
+    "directAccessGrantsEnabled": false,
+    "implicitFlowEnabled": false,
+    "redirectUris": ["http://127.0.0.1:5000/api/v1/auth/callback"],
+    "webOrigins": ["http://127.0.0.1:5173"],
+    "attributes": {"pkce.code.challenge.method": "S256"},
+    "defaultClientScopes": ["web-origins", "profile", "email"]
+  }],
+  "users": [
+    {"username": "researcher-a", "enabled": true, "firstName": "Demo", "lastName": "Researcher A", "requiredActions": []},
+    {"username": "researcher-b", "enabled": true, "firstName": "Demo", "lastName": "Researcher B", "requiredActions": []},
+    {"username": "research-viewer", "enabled": true, "firstName": "Demo", "lastName": "Viewer", "requiredActions": []}
+  ]
+}

@@ -1,24 +1,43 @@
-# Virtual environment
+# Environment and development tools
+.env
+.env.*
+!.env.example
 venv/
-.env/
-
-# Python cache
+.venv/
 __pycache__/
-*.pyc
-*.pyo
-
-# Model files
-*.pt
-*.pth
-*.h5
-
-# Generated data
-generated_data/
-trained_models/
-
-# OS files
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.log
+logs/
+*_error_log.txt
+node_modules/
+dist/
+*.tsbuildinfo
+.ipynb_checkpoints/
 .DS_Store
 Thumbs.db
-
-# Jupyter
-.ipynb_checkpoints/
+# Source healthcare data is local only. Never stage these directories.
+uploads/
+data_for_validation/
+local_data/
+# Unreviewed legacy screenshots may contain source data; retained locally.
+assests/
+# Generated artifacts and newly trained weights
+generated_data/
+trained_models/
+backend/trained/
+backend/models/trained/
+backend/medical_validator.pth
+temp_image_generation/
+*.npz
+*.pt
+# Persistent source/output bytes and attempt workspaces
+data/
+backend/.work/
+frontend/test-results/
+frontend/playwright-report/
+phase5-*.xml

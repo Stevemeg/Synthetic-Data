@@ -1,0 +1,122 @@
+name: quality
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-bookworm
+        env:
+          POSTGRES_USER: test_operator
+          POSTGRES_PASSWORD: temporary-ci-database-only
+          POSTGRES_DB: medsynth_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U test_operator -d medsynth_test"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      APP_ENV: test
+      AUTH_MODE: development
+      DATABASE_URL: postgresql+psycopg://test_operator:temporary-ci-database-only@127.0.0.1:5432/medsynth_test
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with: { python-version: "3.11", cache: pip, cache-dependency-path: "backend/requirements*.txt" }
+      - run: python -m venv .venv
+      - run: echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+      - run: python -m pip install --upgrade pip==26.2.1 setuptools==83.0.0
+      - run: python -m pip install --no-deps https://download.pytorch.org/whl/cpu/torch-2.13.0%2Bcpu-cp311-cp311-manylinux_2_28_x86_64.whl
+      - run: python -m pip install -r backend/requirements-dev.txt -r backend/requirements-evaluation.txt
+      - run: python -m compileall -q backend
+      - run: python -m ruff check backend
+      - run: python -m ruff format --check backend
+      - run: python -m pytest -q
+      - run: python -m pytest -q -m integration
+      - run: python -m pytest -q -m model
+      - run: python -m alembic upgrade head
+      - run: python -m alembic current
+      - run: python -m alembic check
+      - run: python -m pip check
+      - run: python -m pip_audit
+      - run: python -m bandit -r backend/app backend/worker.py
+      - run: python -m backend.scripts.product_smoke_test --start-services
+  frontend:
+    # Reviewed visual baselines are Windows/Chromium; do not silently replace on Linux.
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with: { node-version: "24", cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build
+      - run: npm audit --audit-level=low
+      - run: npm exec -- playwright install chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: failure()
+        with: { name: browser-failure, path: frontend/test-results, retention-days: 7 }
+  containers-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { fetch-depth: 0 }
+      - run: docker run --rm -v "$PWD:/repo:ro" zricethezav/gitleaks:v8.30.1 git /repo --redact
+      - run: docker build --target api -f ops/Dockerfile.backend -t medsynth-api:ci .
+      - run: docker build --target worker -f ops/Dockerfile.backend -t medsynth-worker:ci .
+      - run: docker build -f ops/Dockerfile.frontend -t medsynth-frontend:ci .
+      - run: mkdir -p release-artifacts
+      - run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/release-artifacts:/out" aquasec/trivy:0.75.0 image --scanners vuln --format json --output /out/api-vulnerabilities.json medsynth-api:ci
+      - run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/release-artifacts:/out" aquasec/trivy:0.75.0 image --format cyclonedx --output /out/api-sbom.json medsynth-api:ci
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with: { name: supply-chain-review, path: release-artifacts, retention-days: 30 }
+      # OS findings require explicit review; this gate fails all fixable HIGH/CRITICAL findings.
+      - run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.75.0 image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 medsynth-api:ci
+  oidc-storage-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      APP_ENV: development
+      MEDSYNTH_AUTH_E2E: "1"
+      MEDSYNTH_CONTAINER_RESTART_E2E: "1"
+      MEDSYNTH_BROWSER_URL: http://127.0.0.1:8088
+      MEDSYNTH_S3_TEST: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with: { python-version: "3.11", cache: pip, cache-dependency-path: "backend/requirements*.txt" }
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with: { node-version: "24", cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - run: python -m venv .venv
+      - run: echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+      - run: python -m pip install --upgrade pip==26.2.1 setuptools==83.0.0
+      - run: python -m pip install --no-deps https://download.pytorch.org/whl/cpu/torch-2.13.0%2Bcpu-cp311-cp311-manylinux_2_28_x86_64.whl
+      - run: python -m pip install -r backend/requirements-dev.txt -r backend/requirements-evaluation.txt
+      - run: python -m backend.scripts.prepare_development_security
+      - run: docker compose -p synthetic-data -f compose.yaml -f compose.security.yaml up -d --build
+      - run: python -m backend.scripts.configure_development_security
+      - run: python -m alembic upgrade head
+      - run: docker compose -p synthetic-data -f compose.yaml -f compose.security.yaml -f compose.runtime.yaml up -d --build
+      - run: npm ci --prefix frontend
+      - run: cd frontend && npm exec -- playwright install --with-deps chromium
+      - run: cd frontend && npm run test:auth
+      - run: cd frontend && npm run test:live
+      - run: python -m pytest -q backend/tests/test_s3_integration.py
+      - run: ARTIFACT_STORAGE_BACKEND=s3 S3_ENDPOINT=http://127.0.0.1:9000 python -m backend.scripts.backup_restore_test --container synthetic-data-postgres-1 --verify-storage
+      - name: Stop fixture services
+        if: always()
+        run: docker compose -p synthetic-data -f compose.yaml -f compose.security.yaml -f compose.runtime.yaml down
