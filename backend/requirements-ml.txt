@@ -1,11 +1,11 @@
 # Optional CPU generation/training dependencies, layered on the base runtime.
 -r requirements.txt
-torch==2.13.0
+torch==2.14.1
 numpy==1.26.4
-scipy==1.13.1
-neurokit2==0.2.7
+scipy==1.18.1
+neurokit2==0.2.13
 # NeuroKit 0.2.7 imports requests without declaring it in its wheel metadata.
-requests==2.33.0
+requests==2.34.2
 # NeuroKit and descriptive evaluation dependencies, constrained explicitly.
 matplotlib==3.11.2
 scikit-learn==1.9.1
