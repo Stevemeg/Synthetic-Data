@@ -136,7 +136,7 @@ jobs:
       - name: S3 platform and synthetic workflow smoke checks
         run: |
           for module in platform_smoke_test tabular_smoke_test evaluation_smoke_test product_smoke_test; do
-            docker compose -p synthetic-data -f compose.yaml -f compose.security.yaml -f compose.runtime.yaml exec -T -e AUTH_MODE=development worker python -m "backend.scripts.$module" --start-services
+            docker compose -p synthetic-data -f compose.yaml -f compose.security.yaml -f compose.runtime.yaml run --rm -T --no-deps -e AUTH_MODE=development worker python -m "backend.scripts.$module" --start-services
           done
       - run: ARTIFACT_STORAGE_BACKEND=s3 S3_ENDPOINT=http://127.0.0.1:9000 python -m backend.scripts.backup_restore_test --container synthetic-data-postgres-1 --verify-storage
       - name: Inspect supplied service configuration after authenticated regression

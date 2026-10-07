@@ -275,3 +275,27 @@ implementation; verify the actual deployment's data and rollback procedure.
 PostgreSQL 16 instances and invented Unicode/indexed/JSON data. This is stronger
 than testing only a fresh cluster; it is not proof that arbitrary old physical
 volumes can be mounted without collation maintenance.
+
+Distribution compatibility is part of fix availability. Debian's
+[ACL advisory](https://security-tracker.debian.org/tracker/CVE-2026-54369)
+reports stable packages still affected, new acl_*_at ABI/export compatibility
+problems with existing tar, and a future point-release update rather than
+individual backports. The [ncurses advisory](https://security-tracker.debian.org/tracker/CVE-2025-69720),
+[systemd advisory](https://security-tracker.debian.org/tracker/CVE-2026-16742)
+and [libxml2 advisory](https://security-tracker.debian.org/tracker/CVE-2026-6653)
+also retain affected stable-package states despite newer upstream/unstable
+fixes. These are not "not vulnerable" states. Stable vendor refreshes were
+tried; mixing unstable system libraries into scientific/vendor images without
+established compatibility is not the chosen remediation. Re-review when
+compatible vendor packages arrive. Digest maintenance remains enabled for
+both `/ops` and `/ops/minio`; Go module fixes require reviewed recipe updates
+and the same compile/runtime/scan gates.
+
+Run 37580240762 exposed a verification-command bug: its first read-only
+backend inspection omitted the writable `/tmp` tmpfs used by the real runtime,
+so SciPy import failed with "No usable temporary directory". The inspection
+now supplies the same restricted temporary mount as production Compose.
+Root read-only/non-root/capability restrictions were preserved. Smoke CLI
+processes also run in disposable instances of the final worker image, so their
+metrics listener cannot collide with the persistent worker. Failed/incorrect
+verification attempts do not count as final passes.

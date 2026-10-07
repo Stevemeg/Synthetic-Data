@@ -65,6 +65,11 @@ def main():
             ),
         }
     maps = capture("exec", "-T", "keycloak", "/bin/bash", "-c", "cat /proc/1/maps")
+    for service, status in evidence.items():
+        fields = dict(line.split(":", 1) for line in status["process_status"].splitlines())
+        assert all(int(uid) != 0 for uid in fields["Uid"].split()), f"{service}: root workload"
+        assert int(fields["CapEff"].strip(), 16) == 0, f"{service}: effective capabilities"
+        assert fields["NoNewPrivs"].strip() == "1", f"{service}: privilege elevation allowed"
     assert "pcre" not in maps.lower(), "Keycloak native PCRE reachability review changed"
     evidence["keycloak"]["java_pcre_mapped_after_auth_tests"] = False
     schema_xml = capture(

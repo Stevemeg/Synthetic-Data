@@ -136,6 +136,9 @@ def main():
             errors.append(f"{item['image']}: {item['cve']}: unresolved Critical risk")
             continue
         item.update({field: review[field] for field in fields})
+        for field in ("compatible_fix", "incompatible_fix_evidence"):
+            if field in review:
+                item[field] = review[field]
         item["disposition"] = state
     commit = (
         os.getenv("GITHUB_SHA")

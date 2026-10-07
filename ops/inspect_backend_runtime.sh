@@ -3,6 +3,7 @@ set -euo pipefail
 for image in medsynth-api:ci medsynth-worker:ci; do
   name=${image%%:*}
   docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
+    --tmpfs /tmp:uid=10001,gid=10001,mode=1770 \
     --entrypoint sh "$image" -ec '
       id
       cat /etc/os-release

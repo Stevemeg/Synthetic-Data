@@ -231,6 +231,21 @@ Status at this checkpoint: **PHASE 6 NOT COMPLETE**. A later successful exact
 commit run and its immutable artifacts, final image IDs, scanner metadata and
 working-tree identity are required for any final release designation.
 
+Run [37580240762](https://github.com/Stevemeg/Synthetic-Data/actions/runs/37580240762)
+tested `54eac18a37f7350d93311db310bb81477fb30b98` and exposed a security
+verification-command error: read-only inspection omitted the runtime's `/tmp`
+tmpfs, causing SciPy's temporary-file import to fail. Its security job failed;
+no successful final scan is asserted for that run. The probe is corrected to
+match the actual restricted runtime. Disposable worker smoke containers also
+avoid colliding with the persistent worker's metrics port. Another exact-commit
+remote run is required; its earlier successful frontend job is not substituted.
+
+Final status of run 37580240762: backend and frontend success; security and
+OIDC/storage/browser failure. The latter completed authentication, live S3,
+all four container-based smokes, service-scope checks and cross-distribution
+logical restore before failing on the same missing-tmpfs inspection command.
+Those partial results are retained; they do not constitute a green release run.
+
 ## Important files (reference list)
 
 VERSION; backend/app/version.py; config/security/auth+oidc+tenancy; identity/lifecycle models and Alembic 0005; authentication/membership/metrics routes; S3/factory/instrumented storage and integrity retrieval; safe logging/worker metrics and tenant execution invariants; lifecycle service; migration/bootstrap/backup/operations scripts; focused security/S3/report tests; frontend identity/membership/role-aware pages/client/shell/activity; Playwright real-auth/live/visual suites; ops Dockerfiles/nginx/fixtures; security/runtime/production Compose; GitHub quality/Dependabot; required security/tenancy/storage/lifecycle/operations/deployment/release/story docs and ADRs 0015-0019; updated README/architecture/API/privacy/artifact/development/demo/UX/reporting documentation.
