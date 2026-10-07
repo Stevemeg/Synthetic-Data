@@ -75,8 +75,8 @@ marked for review, never inferred from a missing fixed version.
 API image ID: `sha256:765d15edd0effdbde100a9660cf56b2e9845cf728a2a379e6f0e9b981caba4c1`.
 Worker image ID: `sha256:d0b946daa3eb39dae15849c510b2c287d4cbaef48677689f8c5d7e3135936307`.
 Frontend image ID: `sha256:2c39c11658af4b92c100b024665d825af5695692e7b1a45ad1e9cc8cff0d459b`.
-These locally built image IDs are configuration digests, not registry manifest
-digests. Service IDs and repo digests are recorded individually in the inventory.
+These are the IDs returned by local Docker inspection, not published release
+images. Service IDs and repo digests are recorded individually in the inventory.
 
 ### Distinct API/worker High CVEs — evidence and outstanding validation
 
