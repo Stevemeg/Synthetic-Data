@@ -1,24 +1,43 @@
-# Logs
-logs
+# Environment and development tools
+.env
+.env.*
+!.env.example
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+logs/
+*_error_log.txt
+node_modules/
+dist/
+*.tsbuildinfo
+.ipynb_checkpoints/
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db
+# Source healthcare data is local only. Never stage these directories.
+uploads/
+data_for_validation/
+local_data/
+# Unreviewed legacy screenshots may contain source data; retained locally.
+assests/
+# Generated artifacts and newly trained weights
+generated_data/
+trained_models/
+backend/trained/
+backend/models/trained/
+backend/medical_validator.pth
+temp_image_generation/
+*.npz
+*.pt
+# Persistent source/output bytes and attempt workspaces
+data/
+backend/.work/
+frontend/test-results/
+frontend/playwright-report/
+phase5-*.xml

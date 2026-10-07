@@ -1,0 +1,16 @@
+.git
+.venv
+.env
+**/.env
+data
+backend/.work
+backend/uploads
+backend/generated_data
+**/__pycache__
+**/*.log
+frontend/node_modules
+frontend/dist
+frontend/test-results
+frontend/playwright-report
+docs/screenshots
+frontend/e2e/*-snapshots

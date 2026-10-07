@@ -1,0 +1,2 @@
+# Compatibility entry point for preserved offline lab tools and Phase 3 engines.
+-r requirements-tabular.txt

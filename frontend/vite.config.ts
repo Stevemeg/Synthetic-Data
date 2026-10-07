@@ -1,7 +1,11 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-})
+  build: { rollupOptions: { output: { manualChunks: {
+    'ui-core': ['@mui/material', '@emotion/react', '@emotion/styled'],
+  } } } },
+  test: { include: ["src/**/*.test.{ts,tsx}"] },
+});

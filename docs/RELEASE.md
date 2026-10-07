@@ -1,0 +1,17 @@
+# Release engineering
+
+The root `VERSION` is the default application version source (currently 0.6.0). API/manifests/reports use the configured build version and commit. An environment override must match the release being built. A version number is not evidence that all release criteria passed; see the verification document.
+
+Before tagging: run Python unit/model/PostgreSQL tests, Ruff/format/compileall/pip check, clean/populated Alembic migrations and drift checks, frontend install/unit/type/lint/build/audit, real-browser product/OIDC/tenant checks, visual/accessibility/responsive checks, S3 workflow/migration/deletion, backup/restore, smoke/recovery tests and security scans. Review every remaining finding and unverified gate explicitly.
+
+Build all images without development secrets; record digests/commit/build timestamp and generate an SBOM as a CI artifact. Rehearse deployment with private fake data and production-like containers. Compare readiness, artifact digests and scoped memberships after restart.
+
+For rollout: back up metadata and objects, stop incompatible worker versions, migrate once, verify head/readiness, deploy API/static frontend/workers, then run an authenticated fake-data smoke. Never automate destructive production deployment without a specific authorized target. Rollback may require database/reference restoration plus deletion-tombstone replay; do not automatically downgrade populated identity data.
+
+Recommended GitHub settings: require quality/security CI and pull-request review, restrict direct main-branch writes and force pushes, and retain release artifacts. These are recommendations; repository branch settings have not been changed by this implementation. Dependency updates should be weekly/grouped and reviewed, especially model-runtime changes. Do not automatically merge major upgrades.
+
+Current release disposition: Phase 6 closure was verified on commit `d85cb0a71de199748c72f477d17bd787d162fecb`, [quality run 37581296239](https://github.com/Stevemeg/Synthetic-Data/actions/runs/37581296239). All four jobs passed on GitHub-hosted Linux/Windows, including individual CVE review and exact-runtime-image scans/SBOMs. Any later selected release commit, including this documentation update, must have its own green full `quality` run. Its immutable `runtime-supply-chain-review` artifact is the authoritative commit/version/image/SBOM identity; image IDs from a different commit must not be substituted. The private frontend package has no independent product version; root VERSION remains the default release identity.
+
+The existing convention permits preparing `v0.6.0-rc.1` for the selected verified commit. No tag was created or pushed. No main-branch merge, deployment or branch-protection change was performed. Preserve CI evidence before its 30-day retention expires. Individual remaining-CVE reviews expire 2026-11-06 or earlier upon relevant package/configuration/exposure changes.
+
+For the PostgreSQL bookworm-to-trixie refresh, use a verified logical backup and a new restored volume so indexes are rebuilt under the new collation implementation. The disposable cross-distribution restore passed; arbitrary reuse of old physical volumes is not certified. The archived MinIO build remains a fresh loopback-only development conformance fixture with trusted-only raw credentials; its scoped dispositions do not approve public/shared production deployment.

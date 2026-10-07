@@ -1,69 +1,31 @@
-# React + TypeScript + Vite
+# Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript + Material UI consumes the versioned FastAPI API. Run npm ci, copy .env.example to ignored .env if needed, then npm run dev -- --host 127.0.0.1. VITE_API_URL defaults to http://127.0.0.1:5000.
 
-Currently, two official plugins are available:
+The governed workspace contains Overview, Projects, Datasets, Runs, Evaluations and Reports, with project navigation and refreshable resource URLs. Active polling backs off, cleans up on unmount, recovers from temporary failures and stops on terminal responses.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Tabular runs support registered CSV selection, structural preflight, role/type and
+annotation overrides, synthetic identifiers, Stable Gaussian Copula/Beta CTGAN/Beta
+TVAE, row/seed/holdout/epoch configuration, explicit validation rules, durable job
+states and artifact download. Models remain restricted. Evaluation displays independent measured evidence rather than a composite score.
 
-## Expanding the ESLint configuration
+Checks: npm run typecheck, npm run lint, npm run build. See [root README](../README.md) for database/API/worker setup.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+`npm run test` verifies tabular controls and the submission/artifact flow in jsdom.
+Transport is mocked for DOM tests; the backend has separate real-model/worker tests.
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Phase 4 functional evaluation
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+The Evaluations tab configures a successful tabular run, explicit disclosure/
+utility/group semantics and immutable project policies. It polls durable status
+and displays structural, fidelity, privacy, utility and policy sections plus
+compatible engine comparisons. No universal score or automatic winner is added.
+Phase 5 adds the route-based professional workspace and escaped HTML governance reports. Downloads contain sensitive internal statistics.
+Run npm test, typecheck, lint, build and audit; DOM tests mock HTTP while backend
+smokes verify genuine worker execution and API restart.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Browser verification
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Install Chromium with `npm exec -- playwright install chromium`. Run `npm run test:e2e` for workflow, keyboard, deep-link, comparison, visual regression and axe checks at 1440/1024/768px. `npm run test:visual` isolates visual/accessibility/responsive cases. Windows Chromium baselines use stable fake fixture identities/times and reduced motion. `npm run test:live` requires the local API/worker and generated demo bootstrap; it executes actual generation/evaluation, downloads the report and verifies its size/hash. See [UX](../docs/UX.md), [demo](../docs/DEMO.md) and [verification](../docs/PHASE_5_VERIFICATION.md).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Source rows and filesystem paths are not shown. Phase 6 adds real OIDC sessions, organization selection and role-aware controls backed by server authorization. Do not deploy publicly without the production configuration, operational review and release gates documented in ../docs/DEPLOYMENT.md and ../docs/PHASE_6_VERIFICATION.md.

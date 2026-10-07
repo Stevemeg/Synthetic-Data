@@ -1,147 +1,81 @@
-import React, { useState } from 'react';
-import {
-  Container,
-  CssBaseline,
-  Box,
-  Tabs,
-  Tab,
-  Typography,
-  CircularProgress,
-  Snackbar,
-  Alert,
-  AppBar,
-  Toolbar,
-  ThemeProvider,
-  createTheme
-} from '@mui/material';
-import ScienceIcon from '@mui/icons-material/Science';
-import axios from 'axios';
-
-// Import all of our components
-import { TabularGenerator } from './components/TabularGenerator';
-import { ImageGenerator } from './components/ImageGenerator';
-import { GenomicGenerator } from './components/GenomicGenerator';
-import { TimeSeriesGenerator } from './components/TimeSeriesGenerator';
-
-// --- Theme Definition ---
-const theme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: { main: '#1976d2' },
-    background: { default: '#f4f6f8', paper: '#ffffff' },
-  },
-  typography: {
-    fontFamily: 'Inter, sans-serif',
-    h3: { fontWeight: 700 },
-  },
-  components: {
-    MuiTab: {
-      styleOverrides: {
-        root: { textTransform: 'none', fontWeight: 500, fontSize: '1rem' },
-      },
-    },
-  },
-});
-
-// Helper function to trigger a file download
-const triggerDownload = (url: string, filename: string) => {
-  const link = document.createElement('a');
-  link.href = url;
-  link.setAttribute('download', filename);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
-
-
-function App() {
-  const [activeTab, setActiveTab] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [alert, setAlert] = useState<{ open: boolean, message: string, severity: 'success' | 'error' }>({ open: false, message: '', severity: 'success' });
-
-  // Use the environment variable, or fallback to localhost for development
-  // This ensures it works both locally and on the deployed site
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
-
-  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
-  };
-
-  const handleGenerate = async (config: any, file?: File) => {
-    setLoading(true);
-    const endpoint = `${apiUrl}/api/generate/${config.type}`;
-
-    const formData = new FormData();
-    formData.append('config', JSON.stringify(config));
-    if (file) {
-      formData.append('sourceFile', file);
-    }
-
-    try {
-      const response = await axios.post(endpoint, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (response.data.status === 'success') {
-        setAlert({ open: true, message: 'Generation successful! Downloading...', severity: 'success' });
-        const filename = response.data.fileUrl.split('/').pop();
-        triggerDownload(response.data.fileUrl, filename);
-      } else {
-        throw new Error(response.data.message || 'An unknown backend error occurred.');
-      }
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.details || error.message || 'Failed to connect to backend.';
-      setAlert({ open: true, message: `Error: ${errorMessage}`, severity: 'error' });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCloseAlert = () => setAlert({ ...alert, open: false });
-
+import { lazy, Suspense } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { theme } from "./theme";
+import Shell from "./layouts/Shell";
+import { State } from "./components/Workspace";
+import { IdentityProvider, EditorRoute } from "./features/identity/Identity";
+const Overview = lazy(() => import("./pages/Overview"));
+const Projects = lazy(() => import("./pages/Projects"));
+const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
+const Inventory = lazy(() => import("./pages/Inventory"));
+const DatasetDetail = lazy(() => import("./features/datasets/DatasetDetail"));
+const Generation = lazy(() => import("./features/generation/Generation"));
+const RunDetail = lazy(() => import("./features/generation/RunDetail"));
+const EvaluationConfig = lazy(
+  () => import("./features/evaluation/EvaluationConfig"),
+);
+const EvaluationDetail = lazy(
+  () => import("./features/evaluation/EvaluationDetail"),
+);
+const Policies = lazy(() => import("./features/evaluation/Policies"));
+const Comparison = lazy(() => import("./features/evaluation/Comparison"));
+const Members = lazy(() => import("./features/identity/Members"));
+export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <AppBar position="static">
-          <Toolbar>
-            <ScienceIcon sx={{ mr: 2 }} />
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Synthetic Medical Data Generation Tool
-            </Typography>
-            {loading && <CircularProgress color="inherit" size={24} />}
-          </Toolbar>
-        </AppBar>
-
-        {/* The maxWidth="lg" prop has been removed to make the container full-width */}
-        <Container component="main" sx={{ mt: 4, mb: 4 }}>
-          <Box sx={{ width: '100%', borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
-            <Tabs value={activeTab} onChange={handleTabChange} centered variant="scrollable" scrollButtons="auto">
-              <Tab label="Tabular Data" />
-              <Tab label="Medical Imaging" />
-              <Tab label="Genomic Data" />
-              <Tab label="Time-Series Data" />
-            </Tabs>
-          </Box>
-          
-          <Box sx={{ mt: 3 }}>
-            {activeTab === 0 && <TabularGenerator onGenerate={handleGenerate} />}
-            {activeTab === 1 && <ImageGenerator onGenerate={handleGenerate} />}
-            {activeTab === 2 && <GenomicGenerator onGenerate={handleGenerate} />}
-            {activeTab === 3 && <TimeSeriesGenerator onGenerate={handleGenerate} />}
-          </Box>
-        </Container>
-
-        <Snackbar open={alert.open} autoHideDuration={6000} onClose={handleCloseAlert}>
-          <Alert onClose={handleCloseAlert} severity={alert.severity} sx={{ width: '100%' }}>
-            {alert.message}
-          </Alert>
-        </Snackbar>
-      </Box>
+      <BrowserRouter>
+        <IdentityProvider>
+        <Shell>
+          <Suspense fallback={<State loading error="" reload={() => {}} />}>
+            <Routes>
+              <Route path="/organization/members" element={<Members />} />
+              <Route path="/" element={<Overview />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/projects/:projectId" element={<ProjectDetail />} />
+              {["datasets", "runs", "evaluations", "reports"].map((kind) => (
+                <Route
+                  key={kind}
+                  path={`/${kind}`}
+                  element={<Inventory kind={kind} />}
+                />
+              ))}
+              {["datasets", "runs", "evaluations", "reports"].map((kind) => (
+                <Route
+                  key={kind}
+                  path={`/projects/:projectId/${kind}`}
+                  element={<Inventory kind={kind} />}
+                />
+              ))}
+              <Route path="/datasets/:datasetId" element={<DatasetDetail />} />
+              <Route
+                path="/datasets/:datasetId/generate"
+                element={<EditorRoute><Generation /></EditorRoute>}
+              />
+              <Route path="/runs/:jobId" element={<RunDetail />} />
+              <Route
+                path="/runs/:jobId/evaluate"
+                element={<EditorRoute><EvaluationConfig /></EditorRoute>}
+              />
+              <Route
+                path="/evaluations/:evaluationId"
+                element={<EvaluationDetail />}
+              />
+              <Route
+                path="/projects/:projectId/policies"
+                element={<Policies />}
+              />
+              <Route
+                path="/projects/:projectId/compare"
+                element={<Comparison />}
+              />
+              <Route path="*" element={<Overview notFound />} />
+            </Routes>
+          </Suspense>
+        </Shell>
+        </IdentityProvider>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }
-
-export default App;

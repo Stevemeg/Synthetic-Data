@@ -1,0 +1,1 @@
+"""Lightweight generation contracts."""
