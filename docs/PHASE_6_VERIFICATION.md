@@ -1,5 +1,14 @@
 # Phase 6 verification
 
+**Current closure result: PHASE 6 COMPLETE for the verified engineering commit
+`d85cb0a71de199748c72f477d17bd787d162fecb`.** Actual evidence and limitations are
+recorded in "Completed closure verification" below. A later selected RC commit
+must pass its own full remote run; its artifact supplies the final release
+identity without a self-referential commit hash in this document. Earlier failed
+and pending checkpoints below are preserved as historical evidence.
+
+## Original verification — 2026-10-05
+
 Status: PHASE 6 NOT COMPLETE as a release gate. Local implementation and engineering verification are complete; remote CI execution and explicit review of unfixed High container advisories remain pending. No release-candidate designation is made.
 
 ## Phase 5 baseline before modification
@@ -245,6 +254,93 @@ OIDC/storage/browser failure. The latter completed authentication, live S3,
 all four container-based smokes, service-scope checks and cross-distribution
 logical restore before failing on the same missing-tmpfs inspection command.
 Those partial results are retained; they do not constitute a green release run.
+
+## Completed closure verification — 2026-10-07
+
+Repository `Stevemeg/Synthetic-Data`, branch `phase6-closure`, canonical version
+`0.6.0`, verified commit `d85cb0a71de199748c72f477d17bd787d162fecb`.
+Actual [quality run 37581296239](https://github.com/Stevemeg/Synthetic-Data/actions/runs/37581296239)
+completed **success**. This supersedes earlier release blockers for that commit;
+no earlier failed evidence has been deleted. Working tree was clean after its
+commit/push. Source/core features, synthesis models and architecture were preserved.
+
+| Required job | Job ID | Actual platform | Result |
+| --- | --- | --- | --- |
+| backend | 112661335145 | GitHub-hosted Ubuntu | success |
+| frontend | 112661335346 | GitHub-hosted Windows | success |
+| oidc-storage-browser | 112661335414 | GitHub-hosted Ubuntu | success |
+| containers-security | 112661335429 | GitHub-hosted Ubuntu | success |
+
+No production credentials/private developer state were required. All dependency,
+secret, six-image scan, six-SBOM and individual-review steps actually executed.
+The frontend's failure-only diagnostic upload was skipped because tests passed;
+that is not a skipped security scan. Permissions remain `contents: read`.
+
+| Final verification on this commit | Actual result |
+| --- | --- |
+| Python unit | 190 passed, 75 deselected; 4.38s; existing symlink case passes on Linux |
+| Python integration | 49 passed, two S3 tests skipped in DB-only job, 214 deselected; 163.09s |
+| Real S3 integration, separate required job | Both formerly skipped tests passed; 12.17s |
+| Python model | 33 passed, 232 deselected; 82.73s |
+| Compile / Ruff / format / pip check | All passed; 159 backend files formatted |
+| Alembic upgrade/current/drift | Passed |
+| Frontend install/unit/type/lint/build/audit | Passed; 14 tests/four files; audit zero |
+| Product browser | Nine passed; 46.2s; 12 visual comparisons plus accessibility/responsive/keyboard assertions |
+| Real authentication browser | One passed; 9.3s; issuer/subject, PKCE, CSRF/logout, roles/tenant isolation |
+| Authenticated live S3 browser | One passed; 52.0s; generation/evaluation/governance/download hashes and API/worker restart |
+| Final backend-image model probes | Gaussian Copula, CTGAN and TVAE fit/sample/checksum/save/reload passed in each API and worker image; one-epoch CPU neural regression strategy |
+| Final worker-image platform/tabular/evaluation/product smokes | All four passed in disposable instances of the exact worker image; 2/50/400/400 outputs, 3/4/9/10 artifacts, private S3/hash/restart checks |
+| Backup/restore plus S3 references | Passed; six projects, five datasets, ten generation jobs, four evaluations, 46 artifacts, 51 active object references; 104,738-byte logical backup |
+| Old bookworm -> new trixie logical restore | Invented Unicode/indexed/JSON data and rebuilt unique indexes passed; no physical-volume reuse claim |
+| pip-audit / npm audit / Bandit / gitleaks | Zero findings; existing upstream/deprecation/redundant-annotation warnings retained |
+
+Counts overlap; they must not be added as distinct tests. The Windows local
+post-change unit run separately passed 189 tests with the existing one symlink
+privilege skip. The full local starting baseline is preserved above.
+
+Fresh full runtime scans retained API/worker each 0 Critical/44 High/eight distinct
+CVEs; frontend zero; PostgreSQL 1 Critical/54 High/16 distinct; Keycloak
+0 Critical/6 High/three distinct; MinIO 2 Critical/4 High/six distinct. There are
+25 distinct CVEs/41 image-CVE reviews: six NOT_PRESENT, 16 NOT_REACHABLE and
+19 MITIGATED. Zero BLOCKING, zero ACCEPTED_NO_FIX, zero unresolved Critical,
+zero compatible fixable High left unfixed. **Three raw Critical findings remain**
+with individually evidenced, narrowly scoped NOT_REACHABLE dispositions; raw
+findings were not changed/hidden. API/worker each have two affected-component
+absence reviews, one unreachable functionality review and five mitigations.
+See [individual security dispositions](SECURITY_SCAN_REVIEW.md#individual-closure-dispositions).
+
+The exact tested/scanned image IDs and all six CycloneDX SBOMs are in
+[runtime artifact 11464184644](https://github.com/Stevemeg/Synthetic-Data/actions/runs/37581296239/artifacts/11464184644),
+archive digest `sha256:72d715b8591d4daf90a1efd79f9e44fa527981d08e4b886eea168e445c0aefbd`.
+The independent security artifact is
+[11463939755](https://github.com/Stevemeg/Synthetic-Data/actions/runs/37581296239/artifacts/11463939755),
+digest `sha256:087cea707db7fabed352a769ca1831ef770acdec19c694af23be995be3cc58df`.
+Every runtime fixture image ID equals its corresponding scanned image ID.
+Both backend build environments identify the same workflow commit.
+
+Actual workload UIDs: API/worker/MinIO 10001, frontend 101, PostgreSQL 999,
+Keycloak 1000. All had effective capabilities zero and no-new-privileges enabled.
+API/worker roots remained read-only. Keycloak's standard primary group is 0;
+its workload UID is non-root. All published fixture ports were loopback-only.
+After real auth, Java had no PCRE mapping. MinIO OIDC/LDAP probes returned 400
+without credentials in the fresh unconfigured fixture. No application XML
+columns or PostgreSQL libxml2 Python bindings/systemd-homed were present.
+
+The selected **final** RC identity is the exact commit of its successful full
+quality run and that run's `runtime-supply-chain-review` artifact, not a later
+unverified dirty tree. This document records the completed verification above;
+the documentation commit must independently pass the same full workflow before
+final designation. No release tag/push, main merge or deployment was performed.
+Branch protection was not verified or claimed enabled. Remaining product,
+clinical, provider and deployment limitations above remain unchanged.
+
+The local Docker engine has not been asserted recovered after its disk-full
+failure. Existing local volumes and pre-change backup remain intact; successful
+remote containers are the final runtime evidence. Local reuse requires available
+disk space and recovery, and existing PostgreSQL volumes require the documented
+logical restore/collation review. This does not certify destroyed-store recovery
+or an arbitrary production provider. Core phases 1–6 required no new feature
+phase; future feature/research work belongs in the product/research roadmap.
 
 ## Important files (reference list)
 

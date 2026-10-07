@@ -1,8 +1,12 @@
 # Security scan disposition
 
-**Phase 6 remains incomplete.** The sections below headed "Local scans on
-2026-10-05" describe the original review. The closure review at the end records
-new evidence and supersedes its statements about remote CI and scan scope.
+**Closure verified on commit `d85cb0a71de199748c72f477d17bd787d162fecb`,
+quality run 37581296239: all four jobs succeeded.** A later selected release
+commit must have its own green full run and exact-runtime artifact. The original
+review and intermediate failed/pending reviews below remain historical evidence;
+"Completed security gate" at the end records the successful closure.
+
+## Original review — 2026-10-05
 
 Local scans on 2026-10-05 are evidence about the scanned build and advisory database, not a penetration test or proof of security. Full JSON and the CycloneDX SBOM are retained under ignored `backend/.work`; CI publishes corresponding review artifacts. No scan report containing environment secrets is committed.
 
@@ -299,3 +303,72 @@ Root read-only/non-root/capability restrictions were preserved. Smoke CLI
 processes also run in disposable instances of the final worker image, so their
 metrics listener cannot collide with the persistent worker. Failed/incorrect
 verification attempts do not count as final passes.
+
+### Completed security gate — 2026-10-07
+
+[Quality run 37581296239](https://github.com/Stevemeg/Synthetic-Data/actions/runs/37581296239)
+for `d85cb0a71de199748c72f477d17bd787d162fecb` completed successfully:
+backend, frontend, OIDC/storage/browser and containers/security all green.
+The security job executed pip-audit, npm audit, Bandit, gitleaks, six full
+container scans, six CycloneDX SBOMs, two exact-image runtime/model probes and
+the individual-disposition gate. No security step was conditionally skipped.
+The OIDC job independently rescanned/SBOMed the exact image IDs exercised by
+auth/tenant/S3/restart workflows and all four worker-image smokes; all six IDs
+matched the captured running-service image IDs. Non-root/capability/privilege,
+PCRE mapping, non-XML schema/component-absence and MinIO identity-scope checks
+passed. Cross-distribution PostgreSQL logical restoration also passed.
+
+| Verified runtime image | Critical | High | Medium | Low | Unknown | Distinct High/Critical |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| API | 0 | 44 | 58 | 61 | 2 | 8 |
+| Worker | 0 | 44 | 58 | 61 | 2 | 8 |
+| Frontend | 0 | 0 | 0 | 0 | 0 | 0 |
+| PostgreSQL | 1 | 54 | 92 | 111 | 7 | 16 |
+| Keycloak | 0 | 6 | 47 | 29 | 0 | 3 |
+| MinIO | 2 | 4 | 4 | 2 | 1 | 6 |
+
+Scanner Trivy 0.75.0; scan evidence generated 2026-10-07T06:34Z (exact
+timestamp in normalized JSON); DB schema2 updated 00:53:05.111120428Z,
+Java DB schema1 updated 01:10:24.784068105Z on the same date. The normalized
+review snapshot [closure-reviewed-inventory.csv](security/closure-reviewed-inventory.csv)
+contains all 41 image/CVE entries, installed versions, base images, CVSS,
+fixed/vendor state, runtime purpose, attack conditions, controls and individual
+dispositions. Its image IDs belong to the explicitly recorded verified commit;
+the selected final release commit's CI artifact is authoritative if its IDs differ.
+
+The 25 distinct CVEs above have 41 per-image dispositions: NOT_PRESENT6,
+NOT_REACHABLE16, MITIGATED19, ACCEPTED_NO_FIX0, BLOCKING0. Three raw Critical
+findings remain: PostgreSQL CVE-2026-6653 and MinIO CVE-2026-33322/33419.
+Their scoped NOT_REACHABLE reviews passed the mandatory runtime/configuration
+checks. Raw Critical/High counts remain visible; no severity or suppression
+was changed. No compatible fixable High remains unremediated. Review expires
+2026-11-06 or earlier if relevant package/configuration/exposure changes.
+
+| Image/tag at verified commit | Docker image ID (configuration digest) |
+| --- | --- |
+| medsynth-api:0.6.0 | sha256:5b22206b9a3b82bd229505541382aa16c9b6424ffda71877a92d059c6b9efa8f |
+| medsynth-worker:0.6.0 | sha256:8fc530d7657d262b95ceba21e5be14ff889e4a832e61ff4207a34ae156148360 |
+| medsynth-frontend:0.6.0 | sha256:95117edcf9c4d7a875deb017324bd048a1e7716bcd4f6d624f655c95c7ae62d9 |
+| medsynth-postgres-development:16 | sha256:2cc2c441669d379d798aba4919a925f33a675a09ded9111f287361a115a07f36 |
+| quay.io/keycloak/keycloak:26.8.0 | sha256:43ebe9d4e97c2e5483b7637edf474e6adc1bbf4832a7396686cf90259c396d42 |
+| medsynth-minio-development:7aac2a2 | sha256:87a6c54825933bd59b7314385ba737b85e23d5f0152b3a7640e4869df3b8bb52 |
+
+These locally built CI image IDs are not published registry manifest digests.
+Keycloak's registry digest is
+`sha256:b0f60d489d51c5d113390bdf5461d4c06e6051be026c05549f2e1e10ec352bcc`.
+All upstream base/service manifest pins are in the recipes/Compose and normalized
+inventory. MinIO prints `DEVELOPMENT.GOGET`, built with Go1.26.8; its Go VCS
+metadata records revision7aac2a2 and dependency modifications. It is not relabeled
+as an AIStor security release. Its six upstream main-module CVEs remained detected
+and reviewed even after compatible Go dependency vulnerabilities were removed.
+
+The immutable [runtime artifact](https://github.com/Stevemeg/Synthetic-Data/actions/runs/37581296239/artifacts/11464184644)
+contains every raw scan, SBOM, image inspection, normalized review, actual fixture
+scope and model/upgrade evidence; archive
+`sha256:72d715b8591d4daf90a1efd79f9e44fa527981d08e4b886eea168e445c0aefbd`.
+The [independent security artifact](https://github.com/Stevemeg/Synthetic-Data/actions/runs/37581296239/artifacts/11463939755)
+has archive digest
+`sha256:087cea707db7fabed352a769ca1831ef770acdec19c694af23be995be3cc58df`.
+Retain them before 30-day expiry. They are build/advisory/configuration evidence,
+not penetration testing, clinical validation, production-provider approval or
+regulatory certification. No accepted-no-fix approval was invented.

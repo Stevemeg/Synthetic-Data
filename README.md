@@ -259,4 +259,4 @@ security/dependency checks and release artifacts are documented in
 settings have been applied automatically. [Project story](docs/PROJECT_STORY.md)
 records the technical evolution and current trade-offs.
 
-Current release status: **Phase 6 is not complete as a release gate**. Local engineering checks passed; remote CI and explicit review of remaining unfixed High OS advisories are pending. See [verification](docs/PHASE_6_VERIFICATION.md) and [scanner disposition](docs/SECURITY_SCAN_REVIEW.md). No release candidate or public healthcare production certification is claimed.
+Current release status: **Phase 6 closure verified** by actual GitHub-hosted CI and individual container-CVE dispositions. An RC must use the exact commit with all four `quality` jobs green and its `runtime-supply-chain-review` artifact; see [verification](docs/PHASE_6_VERIFICATION.md) and [security review](docs/SECURITY_SCAN_REVIEW.md). Remaining vulnerabilities and configuration limits are disclosed; this is no healthcare/regulatory certification. No release tag has been created.
