@@ -34,6 +34,7 @@ def inventory(root):
                         "cve": key,
                         "image": image,
                         "image_id": scan.get("Metadata", {}).get("ImageID"),
+                        "repo_digests": scan.get("Metadata", {}).get("RepoDigests", []),
                         "os": scan.get("Metadata", {}).get("OS"),
                         "severity": vulnerability["Severity"],
                         "cvss": vulnerability.get("CVSS", {}),
@@ -59,6 +60,22 @@ def inventory(root):
                     item["packages"].append(package)
         findings.extend(grouped.values())
         summaries[image] = {**dict(counts), "distinct_high_critical": len(grouped)}
+    # A source-built main Go module may report (devel), which scanners cannot
+    # version-match. Preserve upstream's findings rather than mistaking that
+    # metadata gap for remediation. Each remains individually reviewable.
+    if "minio" in summaries:
+        known = json.loads(Path(__file__).with_name("manual_container_findings.json").read_text())
+        seen = {(item["image"], item["cve"]) for item in findings}
+        for item in known:
+            if (item["image"], item["cve"]) not in seen:
+                findings.append(item)
+            else:
+                actual = next(
+                    f for f in findings if f["image"] == item["image"] and f["cve"] == item["cve"]
+                )
+                actual["vendor_fix"] = item["packages"][0]["fixed"]
+                actual["vendor_source"] = item["source"]
+        summaries["minio"]["manual_source_findings"] = len(known)
     return summaries, findings
 
 
@@ -109,7 +126,7 @@ def main():
         if date.fromisoformat(review["review_date"]) < date.today():
             errors.append(f"{item['image']}: {item['cve']}: expired review")
             continue
-        if any(p["fix_available"] for p in item["packages"]):
+        if any(p["fix_available"] for p in item["packages"]) or item.get("vendor_fix"):
             if review.get("compatible_fix") is not False or not review.get(
                 "incompatible_fix_evidence"
             ):
@@ -124,6 +141,40 @@ def main():
         os.getenv("GITHUB_SHA")
         or subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
     )
+    for image in ("api", "worker"):
+        inspection = args.evidence / f"{image}-image.json"
+        if inspection.exists():
+            info = json.loads(inspection.read_text())[0]
+            if f"APP_COMMIT={commit}" not in info["Config"]["Env"]:
+                errors.append(f"{image}: image build commit does not match workflow commit")
+    base_images = {}
+    for image, recipe in (
+        ("api", "ops/Dockerfile.backend"),
+        ("worker", "ops/Dockerfile.backend"),
+        ("frontend", "ops/Dockerfile.frontend"),
+        ("postgres", "ops/Dockerfile.postgres"),
+        ("minio", "ops/minio/Dockerfile"),
+    ):
+        if Path(recipe).exists():
+            lines = Path(recipe).read_text().splitlines()
+            candidates = [line.split()[1] for line in lines if line.startswith("FROM ")]
+            base_images[image] = next(
+                (
+                    line.split()[1]
+                    for line in lines
+                    if line.startswith("FROM ") and line.endswith(" AS runtime")
+                ),
+                candidates[-1],
+            )
+    if Path("compose.security.yaml").exists():
+        base_images["keycloak"] = next(
+            line.strip().removeprefix("image: ")
+            for line in Path("compose.security.yaml").read_text().splitlines()
+            if "image: quay.io/keycloak/" in line
+        )
+    for item in findings:
+        item["base_image"] = base_images.get(item["image"], "not supplied in test fixture")
+        item["scanner"] = "Trivy 0.75.0 plus individual upstream source review"
     report = {
         "commit": commit,
         "version": Path("VERSION").read_text(encoding="utf-8").strip(),

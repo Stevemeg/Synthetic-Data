@@ -13,6 +13,8 @@ services:
       - ./ops/keycloak/realm.json:/opt/keycloak/data/import/realm.json:ro
       - keycloak_dev_data:/opt/keycloak/data
     mem_limit: 1g
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
     healthcheck:
       test: ["CMD", "/bin/bash", "-c", "{ printf 'HEAD /health/ready HTTP/1.0\\r\\n\\r\\n' >&0; grep 'HTTP/1.0 200'; } 0<>/dev/tcp/localhost/9000"]
       interval: 3s
@@ -28,6 +30,8 @@ services:
       MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:?Generate a local S3_SECRET_KEY}
     ports: ["127.0.0.1:9000:9000", "127.0.0.1:9001:9001"]
     volumes: ["minio_dev_data:/data"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 5s

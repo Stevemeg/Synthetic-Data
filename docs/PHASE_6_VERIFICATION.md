@@ -173,6 +173,64 @@ Raw scans, image inspections, scanner versions and command logs are retained in 
 
 Remote Actions execution for the closure commit, final container remediation/dispositions, final SBOM and final regressions remain open. Starting baseline evidence does not substitute for those gates.
 
-## Important files
+## Closure verification — remote attempts and disposition candidate, 2026-10-07
+
+Repository: `Stevemeg/Synthetic-Data`; branch: `phase6-closure`; version: `0.6.0`.
+The inherited Phase 6 implementation was committed without changing remote
+main. No release tag was created and no branch-protection setting was claimed.
+
+| Actual quality run | Commit | Backend | Frontend | Containers/security | OIDC/storage/browser |
+| --- | --- | --- | --- | --- | --- |
+| [37575669077](https://github.com/Stevemeg/Synthetic-Data/actions/runs/37575669077) | `aaa5327d66efb59b06c2a01b15d6c7f4fd58c81a` | success | success | success, original API-only scope | failure: Keycloak connection reset before readiness |
+| [37578284043](https://github.com/Stevemeg/Synthetic-Data/actions/runs/37578284043) | `aac7c5830f21d3f842b781830bf5591160fc05a6` | success | success | failure: deliberately empty disposition file | success |
+
+Run 37578284043 successfully built/scanned API, worker, frontend, PostgreSQL,
+Keycloak and MinIO and generated all six CycloneDX SBOMs. Fresh counts:
+API/worker each 0 Critical/44 High/eight distinct CVEs; frontend zero;
+PostgreSQL 1 Critical/54 High/16 distinct; Keycloak 0 Critical/6 High/three
+distinct; MinIO 2 Critical/4 High/six distinct. This is remediation evidence,
+not a green release gate. Raw findings and SBOMs are retained as its
+`supply-chain-review` artifact and downloaded under ignored local evidence.
+
+The initial Linux backend run reported 184 unit passes (the Windows symlink
+skip passed on Linux), 49 integration passes/two S3 tests skipped, and 33 model
+passes. The OIDC job in the second run explicitly selects `-m integration`
+for those two real-S3 tests and passed authenticated browser/storage workflows,
+all four host-process S3 smokes and backup/restore. Windows frontend runs passed
+14 unit tests and nine product browser tests including reviewed visual,
+accessibility and responsive checks. Counts overlap and must not be summed.
+
+The candidate closure adds six release-gate regression tests: reviewed High
+risks may pass; unknown, changed, expired, fixable or unresolved Critical risks
+fail closed. Local post-change unit verification: 189 passed, one existing
+Windows symlink skip, 75 deselected; compilation/Ruff/format/pip-check passed.
+The final required run must retest these changes and the final container
+configuration. It also runs real fit/sample/checksum/save/reload for all three
+existing tabular engines in both final backend images, all four S3 smoke
+workflows in the final worker, and scans/SBOMs those exact exercised image IDs.
+
+The 41 individual image/CVE reviews and their evidence requirements are in
+[Security scan review](SECURITY_SCAN_REVIEW.md#individual-closure-dispositions)
+and `ops/container_dispositions.json`. No blanket ignore, unfixed exclusion,
+invented risk acceptance or new product feature was introduced. Reviews are
+limited to the supplied application/fresh loopback fixture configuration and
+expire 2026-11-06 or upon relevant configuration/package/exposure changes.
+They do not approve public/shared archived MinIO or arbitrary untrusted
+PostgreSQL SQL/XML clients. The release gate remains open until the final
+exact-commit remote run actually validates them.
+
+Local Docker rebuilds failed after disk exhaustion/read-only filesystem/daemon
+EOF. These attempts are preserved as failures. The subsequent successful
+GitHub-hosted builds do not assert that the local Docker engine has recovered.
+Existing local database/object volumes were not replaced; a verified pre-change
+backup/restore checked 421 S3 references. The PostgreSQL distribution update
+requires logical restoration/collation/index review for existing deployments;
+physical-volume reuse is not certified by the fresh-cluster tests.
+
+Status at this checkpoint: **PHASE 6 NOT COMPLETE**. A later successful exact
+commit run and its immutable artifacts, final image IDs, scanner metadata and
+working-tree identity are required for any final release designation.
+
+## Important files (reference list)
 
 VERSION; backend/app/version.py; config/security/auth+oidc+tenancy; identity/lifecycle models and Alembic 0005; authentication/membership/metrics routes; S3/factory/instrumented storage and integrity retrieval; safe logging/worker metrics and tenant execution invariants; lifecycle service; migration/bootstrap/backup/operations scripts; focused security/S3/report tests; frontend identity/membership/role-aware pages/client/shell/activity; Playwright real-auth/live/visual suites; ops Dockerfiles/nginx/fixtures; security/runtime/production Compose; GitHub quality/Dependabot; required security/tenancy/storage/lifecycle/operations/deployment/release/story docs and ADRs 0015-0019; updated README/architecture/API/privacy/artifact/development/demo/UX/reporting documentation.

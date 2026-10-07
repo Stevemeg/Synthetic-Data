@@ -183,3 +183,95 @@ certification. Scanner databases and vendor states can change. Local MinIO and
 Keycloak fixtures do not certify an external production service. The exact
 deployment controls and vendor support status must accompany any future risk
 acceptance. Phase 6 remains **NOT COMPLETE** until all release gates pass.
+
+### Individual closure dispositions
+
+The next closure run must validate the following **individual, configuration-scoped
+reviews**. They supersede the earlier pending-review rows only if its required
+runtime, authentication, tenant, storage, model and scan jobs pass. There are
+41 image/CVE reviews representing 25 distinct CVEs. Exact installed versions,
+CVSS, package membership, scanner fixed versions and individual rationale are
+retained in `ops/container_dispositions.json` and the CI normalized inventory;
+the raw scanner findings remain unchanged. Review date: **2026-11-06**, or
+immediately after a package, service configuration or exposure change.
+
+| CVE | Package | Image | Compatible fix reported | Disposition | Evidence and scope |
+| --- | --- | --- | --- | --- | --- |
+| CVE-2025-69720 | ncurses | API, worker, PostgreSQL | No | NOT_REACHABLE | infocmp remains installed; no invocation/attacker terminfo path in app, worker, server or supplied startup |
+| CVE-2026-16742 | systemd libraries | API, worker, PostgreSQL | No | NOT_PRESENT | vulnerable systemd-homed executable/service absent; shared libraries remain |
+| CVE-2026-54369 | libacl1 | API, worker, PostgreSQL | No | MITIGATED | non-root workloads; trusted startup paths; no privileged tenant ACL call; backend read-only roots |
+| CVE-2026-76642 | util-linux | API, worker, PostgreSQL | No | MITIGATED | no SYS_ADMIN, relevant fstab authorization or app mount invocation; no-new-privileges |
+| CVE-2026-78408 | util-linux | API, worker, PostgreSQL | No | MITIGATED | nsenter option present; no privileged cgroup/root descriptors, host authority or invocation |
+| CVE-2026-78409 | util-linux | API, worker, PostgreSQL | No | MITIGATED | no authorized X-mount.subdir configuration/host mount authority |
+| CVE-2026-78410 | util-linux | API, worker, PostgreSQL | No | MITIGATED | no authorized restricted bind mounts; non-root and no-new-privileges |
+| CVE-2026-9538 | perl-base | API, worker | No | NOT_PRESENT | Archive::Tar module load and filesystem absence probes |
+| CVE-2026-9538 | full Perl | PostgreSQL | No | NOT_REACHABLE | Archive::Tar present; app/cluster startup does not process untrusted archives through Perl |
+| CVE-2026-6653 | libxml2 | PostgreSQL | No | NOT_REACHABLE | SQL/XML retained; no XML columns, XML query/cast or arbitrary SQL endpoint in MedSynth |
+| CVE-2026-74860 | libxml2 | PostgreSQL | No | NOT_PRESENT | vulnerable Python SAX binding is absent; native library remains |
+| CVE-2026-86138 | libxml2 | PostgreSQL | No | NOT_REACHABLE | no XML qualified-name dictionary input from the application |
+| CVE-2026-86139 | libxml2 | PostgreSQL | No | NOT_REACHABLE | no XML URI escaping call/input from the application |
+| CVE-2026-86140 | libxml2 | PostgreSQL | No | NOT_REACHABLE | no DTD formatting or validation workflow |
+| CVE-2026-86142 | libxml2 | PostgreSQL | No | NOT_REACHABLE | no XPointer evaluation workflow |
+| CVE-2026-86143 | libxml2 | PostgreSQL | No | NOT_REACHABLE | report output uses Python HTML/JSON, not libxml2 XML callbacks |
+| CVE-2026-86144 | libxml2 | PostgreSQL | No | NOT_REACHABLE | no XInclude workflow/resource loader |
+| CVE-2026-103111 | pcre2/pcre2-syntax | Keycloak | No vendor patch reported | NOT_REACHABLE | no attacker-selected native JIT patterns; Java PID PCRE mapping checked after auth |
+| CVE-2026-86145 | pcre2/pcre2-syntax | Keycloak | No vendor patch reported | NOT_REACHABLE | no native DFA matching caller; constant shell health pattern |
+| CVE-2026-89161 | pcre2/pcre2-syntax | Keycloak | No vendor patch reported | NOT_REACHABLE | no native PCRE2 JIT subject/context caller in supplied auth flow |
+| CVE-2026-33322 | github.com/minio/minio | MinIO | AIStor fix; no compatible CE release | NOT_REACHABLE | fresh supplied fixture has no MinIO OIDC provider/client secret; negative STS probe |
+| CVE-2026-33419 | github.com/minio/minio | MinIO | AIStor fix; no compatible CE release | NOT_REACHABLE | no MinIO LDAP server/provider; negative STS probe |
+| CVE-2026-34204 | github.com/minio/minio | MinIO | AIStor fix; no compatible CE release | MITIGATED | trusted-only raw storage credentials; app sends fixed sha256 metadata, no replication-header forwarding |
+| CVE-2026-39414 | github.com/minio/minio | MinIO | AIStor fix; no compatible CE release | MITIGATED | app never calls/proxies S3 Select; raw storage credential holders limited to trusted processes/operators |
+| CVE-2026-40344 | github.com/minio/minio | MinIO | AIStor fix; no compatible CE release | MITIGATED | loopback-only fixture; generated unpublished access keys; no tenant Snowball/header proxy |
+| CVE-2026-41145 | github.com/minio/minio | MinIO | AIStor fix; no compatible CE release | MITIGATED | loopback-only fixture; generated unpublished access keys; SDK-generated storage requests, no query/header proxy |
+
+NOT_PRESENT above refers to the **affected component**, not absence of the whole
+source package. NOT_REACHABLE is limited to the supplied MedSynth application
+and fresh fixture configuration. In particular, a trusted PostgreSQL operator
+can still issue SQL/XML; enabling arbitrary SQL/XML for untrusted clients would
+invalidate the XML dispositions. Adding native PCRE callers invalidates the
+Keycloak review. Enabling MinIO OIDC/LDAP, reusing externally configured MinIO
+state, publishing its ports or distributing storage keys invalidates its review.
+
+MITIGATED findings remain vulnerable. The MinIO access key is high-entropy,
+generated locally and confined to API/worker/operator configuration. Private
+buckets alone do not mitigate its signature-bypass vulnerabilities. Application
+tenants receive neither raw S3 credentials nor a generic storage request/header
+proxy. Direct trusted operator requests retain residual risk. These controls
+substantially limit the **development conformance fixture**; they do not approve
+the archived community service for public/shared production deployment.
+Upstream's [Snowball advisory](https://github.com/minio/minio/security/advisories/GHSA-9c4q-hq6p-c237)
+and [unsigned-trailer advisory](https://github.com/minio/minio/security/advisories/GHSA-hv4r-mvr4-25vw)
+state that all community releases are affected. The [S3 Select advisory](https://github.com/minio/minio/security/advisories/GHSA-h749-fxx7-pwpg)
+and [metadata-injection advisory](https://github.com/minio/minio/security/advisories/GHSA-3rh2-v3gr-35p9)
+also identify AIStor fixes. Adopting a separately licensed product/credential
+requirement is not a compatible automatic update of this generated-credential
+fixture. No ACCEPTED_NO_FIX approval or blanket exception was introduced.
+
+`ops/inspect_backend_runtime.sh` inspects both exact application images under
+read-only roots, dropped capabilities and no-new-privileges, asserts absence
+of the two affected components, and runs the existing one-epoch CPU strategy
+for Gaussian Copula/CTGAN/TVAE with fit/sample/checksum/save/reload. The OIDC
+job runs all four S3 smokes **inside the final worker image**, checks the actual
+service scope after authenticated tests, and then scans/SBOMs the very image IDs
+it exercised. The security job independently executes pip-audit, npm audit,
+Bandit, gitleaks, six full scans, six SBOMs and individual review validation.
+No conditional security skip or unfixed exclusion is used.
+
+The completed remediation scan in run
+[37578284043](https://github.com/Stevemeg/Synthetic-Data/actions/runs/37578284043)
+at commit `aac7c5830f21d3f842b781830bf5591160fc05a6` found API/worker each
+0 Critical/44 High, frontend zero, PostgreSQL 1 Critical/54 High,
+Keycloak 0 Critical/6 High and MinIO 2 Critical/4 High. All six builds and SBOMs
+succeeded; its empty review file correctly failed the security gate. That is
+preserved failed evidence, not final release approval. The new required run
+must validate these reviews and the final container/control changes anew.
+
+The PostgreSQL distribution refresh changes libc/collation inputs. Existing
+physical volumes have not been recreated/upgraded locally. Before adopting
+trixie for an existing bookworm deployment, take a verified logical backup and
+restore into a new volume so indexes are rebuilt under the new collation
+implementation; verify the actual deployment's data and rollback procedure.
+`ops/verify_postgres_upgrade.sh` checks this path using disposable, network-isolated
+PostgreSQL 16 instances and invented Unicode/indexed/JSON data. This is stronger
+than testing only a fresh cluster; it is not proof that arbitrary old physical
+volumes can be mounted without collation maintenance.

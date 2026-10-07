@@ -71,6 +71,18 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with: { fetch-depth: 0 }
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with: { python-version: "3.11", cache: pip, cache-dependency-path: "backend/requirements*.txt" }
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with: { node-version: "24", cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - run: python -m venv .venv
+      - run: echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+      - run: python -m pip install --upgrade pip==26.2.1 setuptools==83.0.0
+      - run: python -m pip install --no-deps https://download.pytorch.org/whl/cpu/torch-2.13.0%2Bcpu-cp311-cp311-manylinux_2_28_x86_64.whl
+      - run: python -m pip install -r backend/requirements-dev.txt -r backend/requirements-evaluation.txt
+      - run: python -m pip_audit
+      - run: python -m bandit -r backend/app backend/worker.py
+      - run: npm audit --prefix frontend --audit-level=low
       - run: docker run --rm -v "$PWD:/repo:ro" zricethezav/gitleaks:v8.30.1 git /repo --redact
       - run: docker build --build-arg APP_COMMIT="$GITHUB_SHA" --build-arg APP_BUILD_TIMESTAMP="$(date -u +%FT%TZ)" --target api -f ops/Dockerfile.backend -t medsynth-api:ci .
       - run: docker build --build-arg APP_COMMIT="$GITHUB_SHA" --build-arg APP_BUILD_TIMESTAMP="$(date -u +%FT%TZ)" --target worker -f ops/Dockerfile.backend -t medsynth-worker:ci .
@@ -79,6 +91,8 @@ jobs:
       - run: docker build -f ops/minio/Dockerfile -t medsynth-minio-development:7aac2a2 .
       - run: docker pull quay.io/keycloak/keycloak:26.8.0@sha256:b0f60d489d51c5d113390bdf5461d4c06e6051be026c05549f2e1e10ec352bcc
       - run: mkdir -p release-artifacts
+      - name: Inspect final backend runtime and non-root users
+        run: bash ops/inspect_backend_runtime.sh
       - name: Scan every runtime image and generate its SBOM
         run: bash ops/scan_release_images.sh
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -120,16 +134,26 @@ jobs:
       - run: cd frontend && npm run test:live
       - run: python -m pytest -q -m integration backend/tests/test_s3_integration.py
       - name: S3 platform and synthetic workflow smoke checks
-        env:
-          AUTH_MODE: development
-          ARTIFACT_STORAGE_BACKEND: s3
-          S3_ENDPOINT: http://127.0.0.1:9000
         run: |
-          python -m backend.scripts.platform_smoke_test --start-services
-          python -m backend.scripts.tabular_smoke_test --start-services
-          python -m backend.scripts.evaluation_smoke_test --start-services
-          python -m backend.scripts.product_smoke_test --start-services
+          for module in platform_smoke_test tabular_smoke_test evaluation_smoke_test product_smoke_test; do
+            docker compose -p synthetic-data -f compose.yaml -f compose.security.yaml -f compose.runtime.yaml exec -T -e AUTH_MODE=development worker python -m "backend.scripts.$module" --start-services
+          done
       - run: ARTIFACT_STORAGE_BACKEND=s3 S3_ENDPOINT=http://127.0.0.1:9000 python -m backend.scripts.backup_restore_test --container synthetic-data-postgres-1 --verify-storage
+      - name: Inspect supplied service configuration after authenticated regression
+        run: python ops/verify_fixture_scope.py
+      - name: Verify PostgreSQL cross-distribution logical backup and restore
+        run: bash ops/verify_postgres_upgrade.sh
+      - name: Scan and generate SBOMs for the exact images exercised above
+        run: |
+          docker tag medsynth-api:0.6.0 medsynth-api:ci
+          docker tag medsynth-worker:0.6.0 medsynth-worker:ci
+          docker tag medsynth-frontend:0.6.0 medsynth-frontend:ci
+          bash ops/inspect_backend_runtime.sh
+          bash ops/scan_release_images.sh
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with: { name: runtime-supply-chain-review, path: release-artifacts, retention-days: 30 }
+      - run: python ops/review_container_findings.py release-artifacts
       - name: Stop fixture services
         if: always()
         run: docker compose -p synthetic-data -f compose.yaml -f compose.security.yaml -f compose.runtime.yaml down

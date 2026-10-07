@@ -1,4 +1,1293 @@
 {
   "schema_version": 1,
-  "dispositions": []
+  "dispositions": [
+    {
+      "image": "api",
+      "cve": "CVE-2026-76642",
+      "packages": [
+        [
+          "bsdutils",
+          "1:2.41.5-0+deb13u1"
+        ],
+        [
+          "libblkid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "liblastlog2-2",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libmount1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libsmartcols1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libuuid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "login",
+          "1:4.16.0-2+really2.41.5-0+deb13u1"
+        ],
+        [
+          "mount",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "util-linux",
+          "2.41.5-0+deb13u1"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "mount helper privilege flow",
+      "reachability": "The supplied containers have no SYS_ADMIN/host-namespace authority or tenant-authorized fstab entries. Workload processes are non-root and no-new-privileges prevents setuid elevation. The application does not invoke mount helpers.",
+      "privilege_required": "Authorized mount helper execution and vulnerable failure flow",
+      "attack_preconditions": "Authorized mount helper execution and vulnerable failure flow",
+      "compensating_controls": "UID10001; read-only root; capabilities dropped; no-new-privileges; validated storage paths",
+      "rationale": "The supplied containers have no SYS_ADMIN/host-namespace authority or tenant-authorized fstab entries. Workload processes are non-root and no-new-privileges prevents setuid elevation. The application does not invoke mount helpers.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "api",
+      "cve": "CVE-2026-78408",
+      "packages": [
+        [
+          "bsdutils",
+          "1:2.41.5-0+deb13u1"
+        ],
+        [
+          "libblkid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "liblastlog2-2",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libmount1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libsmartcols1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libuuid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "login",
+          "1:4.16.0-2+really2.41.5-0+deb13u1"
+        ],
+        [
+          "mount",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "util-linux",
+          "2.41.5-0+deb13u1"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "nsenter cgroup entry utility",
+      "reachability": "The option is present, but no nsenter invocation, privileged root descriptor or host cgroup/namespace authority is provided by MedSynth. Workload processes are non-root with no-new-privileges and no SYS_ADMIN. This is mitigation, not absence of nsenter.",
+      "privilege_required": "Privileged nsenter --join-cgroup execution with exploitable inherited descriptors",
+      "attack_preconditions": "Privileged nsenter --join-cgroup execution with exploitable inherited descriptors",
+      "compensating_controls": "UID10001; read-only root; capabilities dropped; no-new-privileges; validated storage paths",
+      "rationale": "The option is present, but no nsenter invocation, privileged root descriptor or host cgroup/namespace authority is provided by MedSynth. Workload processes are non-root with no-new-privileges and no SYS_ADMIN. This is mitigation, not absence of nsenter.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "api",
+      "cve": "CVE-2026-78409",
+      "packages": [
+        [
+          "bsdutils",
+          "1:2.41.5-0+deb13u1"
+        ],
+        [
+          "libblkid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "liblastlog2-2",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libmount1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libsmartcols1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libuuid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "login",
+          "1:4.16.0-2+really2.41.5-0+deb13u1"
+        ],
+        [
+          "mount",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "util-linux",
+          "2.41.5-0+deb13u1"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "X-mount.subdir path handling",
+      "reachability": "No user-authorized fstab subdirectory mounts, SYS_ADMIN or host namespace access are supplied. Non-root workloads and no-new-privileges restrict mount authority. The vulnerability is retained rather than assumed absent on a particular kernel.",
+      "privilege_required": "Mount authority with attacker-controlled intermediate symlinks in configured subdirectory mounts",
+      "attack_preconditions": "Mount authority with attacker-controlled intermediate symlinks in configured subdirectory mounts",
+      "compensating_controls": "UID10001; read-only root; capabilities dropped; no-new-privileges; validated storage paths",
+      "rationale": "No user-authorized fstab subdirectory mounts, SYS_ADMIN or host namespace access are supplied. Non-root workloads and no-new-privileges restrict mount authority. The vulnerability is retained rather than assumed absent on a particular kernel.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "api",
+      "cve": "CVE-2026-78410",
+      "packages": [
+        [
+          "bsdutils",
+          "1:2.41.5-0+deb13u1"
+        ],
+        [
+          "libblkid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "liblastlog2-2",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libmount1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libsmartcols1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libuuid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "login",
+          "1:4.16.0-2+really2.41.5-0+deb13u1"
+        ],
+        [
+          "mount",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "util-linux",
+          "2.41.5-0+deb13u1"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "restricted bind mount ownership validation",
+      "reachability": "No relevant fstab bind mount authorization or SYS_ADMIN is supplied; non-root workloads cannot obtain mount privilege through setuid under no-new-privileges. Application storage paths do not expose host mount configuration.",
+      "privilege_required": "Mount authority and concurrent inode ownership/mode replacement",
+      "attack_preconditions": "Mount authority and concurrent inode ownership/mode replacement",
+      "compensating_controls": "UID10001; read-only root; capabilities dropped; no-new-privileges; validated storage paths",
+      "rationale": "No relevant fstab bind mount authorization or SYS_ADMIN is supplied; non-root workloads cannot obtain mount privilege through setuid under no-new-privileges. Application storage paths do not expose host mount configuration.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "api",
+      "cve": "CVE-2026-54369",
+      "packages": [
+        [
+          "libacl1",
+          "2.3.2-2+b1"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "inherited ACL library used by OS utilities",
+      "reachability": "Application and PostgreSQL workload processes are non-root. Application roots are read-only; upload/storage keys are validated and no app ACL utility invocation exists. PostgreSQL startup operates on operator-owned volume paths, not tenant-controlled host paths. No stable compatible trixie package fix is reported.",
+      "privilege_required": "A privileged ACL pathname operation concurrent with attacker-controlled symlinks",
+      "attack_preconditions": "A privileged ACL pathname operation concurrent with attacker-controlled symlinks",
+      "compensating_controls": "UID10001; read-only root; capabilities dropped; no-new-privileges; validated storage paths",
+      "rationale": "Application and PostgreSQL workload processes are non-root. Application roots are read-only; upload/storage keys are validated and no app ACL utility invocation exists. PostgreSQL startup operates on operator-owned volume paths, not tenant-controlled host paths. No stable compatible trixie package fix is reported.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "api",
+      "cve": "CVE-2025-69720",
+      "packages": [
+        [
+          "libncursesw6",
+          "6.5+20250216-2"
+        ],
+        [
+          "libtinfo6",
+          "6.5+20250216-2"
+        ],
+        [
+          "ncurses-base",
+          "6.5+20250216-2"
+        ],
+        [
+          "ncurses-bin",
+          "6.5+20250216-2"
+        ]
+      ],
+      "disposition": "NOT_REACHABLE",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "infocmp terminfo inspection",
+      "reachability": "No invocation or terminfo-input path in the application, worker, PostgreSQL server or supplied startup/configuration scripts. infocmp remains installed; this is a functionality reachability disposition, not package absence.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "Processing attacker-controlled terminfo data with infocmp",
+      "compensating_controls": "UID10001; read-only root; capabilities dropped; no-new-privileges; validated storage paths",
+      "rationale": "No invocation or terminfo-input path in the application, worker, PostgreSQL server or supplied startup/configuration scripts. infocmp remains installed; this is a functionality reachability disposition, not package absence.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "api",
+      "cve": "CVE-2026-16742",
+      "packages": [
+        [
+          "libsystemd0",
+          "257.13-1~deb13u1"
+        ],
+        [
+          "libudev1",
+          "257.13-1~deb13u1"
+        ]
+      ],
+      "disposition": "NOT_PRESENT",
+      "runtime_presence": "Installed package retained; affected component absent",
+      "runtime_purpose": "systemd-homed privilege service",
+      "reachability": "The vulnerable systemd-homed executable and service are absent. libsystemd0/libudev1 remain installed as inherited shared libraries, which alone do not contain the affected homed workflow.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "systemd-homed processing attacker-controlled home identity records",
+      "compensating_controls": "UID10001; read-only root; capabilities dropped; no-new-privileges; validated storage paths",
+      "rationale": "The vulnerable systemd-homed executable and service are absent. libsystemd0/libudev1 remain installed as inherited shared libraries, which alone do not contain the affected homed workflow.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "api",
+      "cve": "CVE-2026-9538",
+      "packages": [
+        [
+          "perl-base",
+          "5.40.1-6+deb13u1"
+        ]
+      ],
+      "disposition": "NOT_PRESENT",
+      "runtime_presence": "Installed package retained; affected component absent",
+      "runtime_purpose": "Archive::Tar Perl archive processing",
+      "reachability": "The API/worker perl-base installation does not include Archive::Tar. The module load and filesystem absence probes are recorded; no arbitrary-archive Perl execution exists.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "Processing attacker-controlled tar archives using Archive::Tar",
+      "compensating_controls": "UID10001; read-only root; capabilities dropped; no-new-privileges; validated storage paths",
+      "rationale": "The API/worker perl-base installation does not include Archive::Tar. The module load and filesystem absence probes are recorded; no arbitrary-archive Perl execution exists.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "keycloak",
+      "cve": "CVE-2026-103111",
+      "packages": [
+        [
+          "pcre2",
+          "10.40-6.el9"
+        ],
+        [
+          "pcre2-syntax",
+          "10.40-6.el9"
+        ]
+      ],
+      "disposition": "NOT_REACHABLE",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "Keycloak inherited native PCRE2 JIT library",
+      "reachability": "Keycloak runs Java regex handling; PCRE2 is not mapped by its Java PID after real authentication. The only supplied shell health regex is a constant HTTP status pattern, with no attacker-selected PCRE/JIT pattern.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "Attacker-controlled PCRE2 pattern and affected JIT API usage",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "Keycloak runs Java regex handling; PCRE2 is not mapped by its Java PID after real authentication. The only supplied shell health regex is a constant HTTP status pattern, with no attacker-selected PCRE/JIT pattern.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "keycloak",
+      "cve": "CVE-2026-86145",
+      "packages": [
+        [
+          "pcre2",
+          "10.40-6.el9"
+        ],
+        [
+          "pcre2-syntax",
+          "10.40-6.el9"
+        ]
+      ],
+      "disposition": "NOT_REACHABLE",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "Keycloak inherited PCRE2 DFA matching",
+      "reachability": "No supplied Keycloak/application route invokes native PCRE2 DFA matching or accepts native-regex programs. Java PID mapping and the constant health pattern delimit this scope.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "Recursive/cached-workspace DFA matching with attacker-selected pattern or constrained heap",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "No supplied Keycloak/application route invokes native PCRE2 DFA matching or accepts native-regex programs. Java PID mapping and the constant health pattern delimit this scope.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "keycloak",
+      "cve": "CVE-2026-89161",
+      "packages": [
+        [
+          "pcre2",
+          "10.40-6.el9"
+        ],
+        [
+          "pcre2-syntax",
+          "10.40-6.el9"
+        ]
+      ],
+      "disposition": "NOT_REACHABLE",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "Keycloak inherited PCRE2 JIT matching",
+      "reachability": "No native PCRE2 JIT caller exists in the supplied Java authentication workflow. Runtime mapping after auth does not load PCRE; shell health checking uses a fixed non-JIT grep pattern.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "Affected JIT subject/context reuse and incorrect free operation",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "No native PCRE2 JIT caller exists in the supplied Java authentication workflow. Runtime mapping after auth does not load PCRE; shell health checking uses a fixed non-JIT grep pattern.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "minio",
+      "cve": "CVE-2026-33322",
+      "packages": [
+        [
+          "github.com/minio/minio",
+          "v0.0.0-20260212201848-7aac2a2c5b7c+dirty"
+        ]
+      ],
+      "disposition": "NOT_REACHABLE",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "MinIO optional OIDC STS provider",
+      "reachability": "The supplied fresh fixture has no MinIO OIDC provider/client secret; application OIDC is a separate Keycloak integration. Service scope verification rejects MinIO identity environment changes and confirms STS does not issue credentials. Enabling MinIO OIDC invalidates this disposition.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "MinIO OIDC configured and attacker knows its ClientSecret",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "The supplied fresh fixture has no MinIO OIDC provider/client secret; application OIDC is a separate Keycloak integration. Service scope verification rejects MinIO identity environment changes and confirms STS does not issue credentials. Enabling MinIO OIDC invalidates this disposition.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06",
+      "compatible_fix": false,
+      "incompatible_fix_evidence": "Upstream identifies fixes in MinIO AIStor, not an available archived community release. Adopting a separately licensed vendor product/credential requirement is not a compatible automatic update of this generated-credential development fixture. See individual upstream advisory links in docs/SECURITY_SCAN_REVIEW.md."
+    },
+    {
+      "image": "minio",
+      "cve": "CVE-2026-33419",
+      "packages": [
+        [
+          "github.com/minio/minio",
+          "v0.0.0-20260212201848-7aac2a2c5b7c+dirty"
+        ]
+      ],
+      "disposition": "NOT_REACHABLE",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "MinIO optional LDAP STS provider",
+      "reachability": "No MinIO LDAP server or provider is configured in the supplied fresh fixture. A negative STS test issues no credentials. Enabling LDAP or reusing externally configured MinIO state invalidates this disposition.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "Configured reachable LDAP authentication server and repeated credential guesses",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "No MinIO LDAP server or provider is configured in the supplied fresh fixture. A negative STS test issues no credentials. Enabling LDAP or reusing externally configured MinIO state invalidates this disposition.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06",
+      "compatible_fix": false,
+      "incompatible_fix_evidence": "Upstream identifies fixes in MinIO AIStor, not an available archived community release. Adopting a separately licensed vendor product/credential requirement is not a compatible automatic update of this generated-credential development fixture. See individual upstream advisory links in docs/SECURITY_SCAN_REVIEW.md."
+    },
+    {
+      "image": "minio",
+      "cve": "CVE-2026-34204",
+      "packages": [
+        [
+          "github.com/minio/minio",
+          "v0.0.0-20260212201848-7aac2a2c5b7c+dirty"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "MinIO S3 write metadata extraction",
+      "reachability": "The development fixture is loopback-only and its generated storage credentials are confined to trusted operators/API/worker, never tenants. The S3 adapter sends fixed sha256 metadata and does not relay client headers or expose raw storage credentials. Tenant actions cannot select replication headers. Direct credential-bearing operator clients retain residual risk; no production MinIO endorsement is made.",
+      "privilege_required": "Authenticated write principal supplies crafted replication encryption headers",
+      "attack_preconditions": "Authenticated write principal supplies crafted replication encryption headers",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "The development fixture is loopback-only and its generated storage credentials are confined to trusted operators/API/worker, never tenants. The S3 adapter sends fixed sha256 metadata and does not relay client headers or expose raw storage credentials. Tenant actions cannot select replication headers. Direct credential-bearing operator clients retain residual risk; no production MinIO endorsement is made.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06",
+      "compatible_fix": false,
+      "incompatible_fix_evidence": "Upstream identifies fixes in MinIO AIStor, not an available archived community release. Adopting a separately licensed vendor product/credential requirement is not a compatible automatic update of this generated-credential development fixture. See individual upstream advisory links in docs/SECURITY_SCAN_REVIEW.md."
+    },
+    {
+      "image": "minio",
+      "cve": "CVE-2026-39414",
+      "packages": [
+        [
+          "github.com/minio/minio",
+          "v0.0.0-20260212201848-7aac2a2c5b7c+dirty"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "MinIO S3 Select CSV reader",
+      "reachability": "No application S3 Select call or proxy exists. Loopback exposure and generated credentials confine raw storage access to trusted operator/API/worker processes; tenants cannot invoke SelectObjectContent. Raw operator clients can still trigger the bug, so this is mitigation, not a universal reachability claim.",
+      "privilege_required": "Storage credential holder uploads a long-line CSV and calls S3 Select",
+      "attack_preconditions": "Storage credential holder uploads a long-line CSV and calls S3 Select",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "No application S3 Select call or proxy exists. Loopback exposure and generated credentials confine raw storage access to trusted operator/API/worker processes; tenants cannot invoke SelectObjectContent. Raw operator clients can still trigger the bug, so this is mitigation, not a universal reachability claim.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06",
+      "compatible_fix": false,
+      "incompatible_fix_evidence": "Upstream identifies fixes in MinIO AIStor, not an available archived community release. Adopting a separately licensed vendor product/credential requirement is not a compatible automatic update of this generated-credential development fixture. See individual upstream advisory links in docs/SECURITY_SCAN_REVIEW.md."
+    },
+    {
+      "image": "minio",
+      "cve": "CVE-2026-40344",
+      "packages": [
+        [
+          "github.com/minio/minio",
+          "v0.0.0-20260212201848-7aac2a2c5b7c+dirty"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "MinIO Snowball unsigned-trailer extraction",
+      "reachability": "Loopback-only fixture exposure, randomly generated unpublished access keys, trusted-only raw storage clients and an application adapter that does not expose Snowball/header forwarding substantially restrict exploitation. Private buckets alone do not fix this authentication bypass. Residual local/operator risk remains; enabling public/shared direct access invalidates this disposition.",
+      "privilege_required": "Knowledge of a write-capable storage access key and direct Snowball upload",
+      "attack_preconditions": "Knowledge of a write-capable storage access key and direct Snowball upload",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "Loopback-only fixture exposure, randomly generated unpublished access keys, trusted-only raw storage clients and an application adapter that does not expose Snowball/header forwarding substantially restrict exploitation. Private buckets alone do not fix this authentication bypass. Residual local/operator risk remains; enabling public/shared direct access invalidates this disposition.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06",
+      "compatible_fix": false,
+      "incompatible_fix_evidence": "Upstream identifies fixes in MinIO AIStor, not an available archived community release. Adopting a separately licensed vendor product/credential requirement is not a compatible automatic update of this generated-credential development fixture. See individual upstream advisory links in docs/SECURITY_SCAN_REVIEW.md."
+    },
+    {
+      "image": "minio",
+      "cve": "CVE-2026-41145",
+      "packages": [
+        [
+          "github.com/minio/minio",
+          "v0.0.0-20260212201848-7aac2a2c5b7c+dirty"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "MinIO unsigned-trailer object/multipart write",
+      "reachability": "The supplied fixture is bound to loopback; high-entropy generated access keys are not published/returned to tenants. Application storage operations use SDK-generated authenticated requests and do not relay arbitrary headers/query credentials. The underlying flaw remains; this narrow development-fixture mitigation does not approve public storage deployment.",
+      "privilege_required": "Knowledge of a write-capable access key and direct query-credential unsigned-trailer upload",
+      "attack_preconditions": "Knowledge of a write-capable access key and direct query-credential unsigned-trailer upload",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "The supplied fixture is bound to loopback; high-entropy generated access keys are not published/returned to tenants. Application storage operations use SDK-generated authenticated requests and do not relay arbitrary headers/query credentials. The underlying flaw remains; this narrow development-fixture mitigation does not approve public storage deployment.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06",
+      "compatible_fix": false,
+      "incompatible_fix_evidence": "Upstream identifies fixes in MinIO AIStor, not an available archived community release. Adopting a separately licensed vendor product/credential requirement is not a compatible automatic update of this generated-credential development fixture. See individual upstream advisory links in docs/SECURITY_SCAN_REVIEW.md."
+    },
+    {
+      "image": "postgres",
+      "cve": "CVE-2026-76642",
+      "packages": [
+        [
+          "bsdutils",
+          "1:2.41.5-0+deb13u1"
+        ],
+        [
+          "libblkid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "liblastlog2-2",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libmount1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libsmartcols1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libuuid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "login",
+          "1:4.16.0-2+really2.41.5-0+deb13u1"
+        ],
+        [
+          "mount",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "util-linux",
+          "2.41.5-0+deb13u1"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "mount helper privilege flow",
+      "reachability": "The supplied containers have no SYS_ADMIN/host-namespace authority or tenant-authorized fstab entries. Workload processes are non-root and no-new-privileges prevents setuid elevation. The application does not invoke mount helpers.",
+      "privilege_required": "Authorized mount helper execution and vulnerable failure flow",
+      "attack_preconditions": "Authorized mount helper execution and vulnerable failure flow",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "The supplied containers have no SYS_ADMIN/host-namespace authority or tenant-authorized fstab entries. Workload processes are non-root and no-new-privileges prevents setuid elevation. The application does not invoke mount helpers.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "postgres",
+      "cve": "CVE-2026-78408",
+      "packages": [
+        [
+          "bsdutils",
+          "1:2.41.5-0+deb13u1"
+        ],
+        [
+          "libblkid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "liblastlog2-2",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libmount1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libsmartcols1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libuuid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "login",
+          "1:4.16.0-2+really2.41.5-0+deb13u1"
+        ],
+        [
+          "mount",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "util-linux",
+          "2.41.5-0+deb13u1"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "nsenter cgroup entry utility",
+      "reachability": "The option is present, but no nsenter invocation, privileged root descriptor or host cgroup/namespace authority is provided by MedSynth. Workload processes are non-root with no-new-privileges and no SYS_ADMIN. This is mitigation, not absence of nsenter.",
+      "privilege_required": "Privileged nsenter --join-cgroup execution with exploitable inherited descriptors",
+      "attack_preconditions": "Privileged nsenter --join-cgroup execution with exploitable inherited descriptors",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "The option is present, but no nsenter invocation, privileged root descriptor or host cgroup/namespace authority is provided by MedSynth. Workload processes are non-root with no-new-privileges and no SYS_ADMIN. This is mitigation, not absence of nsenter.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "postgres",
+      "cve": "CVE-2026-78409",
+      "packages": [
+        [
+          "bsdutils",
+          "1:2.41.5-0+deb13u1"
+        ],
+        [
+          "libblkid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "liblastlog2-2",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libmount1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libsmartcols1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libuuid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "login",
+          "1:4.16.0-2+really2.41.5-0+deb13u1"
+        ],
+        [
+          "mount",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "util-linux",
+          "2.41.5-0+deb13u1"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "X-mount.subdir path handling",
+      "reachability": "No user-authorized fstab subdirectory mounts, SYS_ADMIN or host namespace access are supplied. Non-root workloads and no-new-privileges restrict mount authority. The vulnerability is retained rather than assumed absent on a particular kernel.",
+      "privilege_required": "Mount authority with attacker-controlled intermediate symlinks in configured subdirectory mounts",
+      "attack_preconditions": "Mount authority with attacker-controlled intermediate symlinks in configured subdirectory mounts",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "No user-authorized fstab subdirectory mounts, SYS_ADMIN or host namespace access are supplied. Non-root workloads and no-new-privileges restrict mount authority. The vulnerability is retained rather than assumed absent on a particular kernel.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "postgres",
+      "cve": "CVE-2026-78410",
+      "packages": [
+        [
+          "bsdutils",
+          "1:2.41.5-0+deb13u1"
+        ],
+        [
+          "libblkid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "liblastlog2-2",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libmount1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libsmartcols1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libuuid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "login",
+          "1:4.16.0-2+really2.41.5-0+deb13u1"
+        ],
+        [
+          "mount",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "util-linux",
+          "2.41.5-0+deb13u1"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "restricted bind mount ownership validation",
+      "reachability": "No relevant fstab bind mount authorization or SYS_ADMIN is supplied; non-root workloads cannot obtain mount privilege through setuid under no-new-privileges. Application storage paths do not expose host mount configuration.",
+      "privilege_required": "Mount authority and concurrent inode ownership/mode replacement",
+      "attack_preconditions": "Mount authority and concurrent inode ownership/mode replacement",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "No relevant fstab bind mount authorization or SYS_ADMIN is supplied; non-root workloads cannot obtain mount privilege through setuid under no-new-privileges. Application storage paths do not expose host mount configuration.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "postgres",
+      "cve": "CVE-2026-54369",
+      "packages": [
+        [
+          "libacl1",
+          "2.3.2-2+b1"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "inherited ACL library used by OS utilities",
+      "reachability": "Application and PostgreSQL workload processes are non-root. Application roots are read-only; upload/storage keys are validated and no app ACL utility invocation exists. PostgreSQL startup operates on operator-owned volume paths, not tenant-controlled host paths. No stable compatible trixie package fix is reported.",
+      "privilege_required": "A privileged ACL pathname operation concurrent with attacker-controlled symlinks",
+      "attack_preconditions": "A privileged ACL pathname operation concurrent with attacker-controlled symlinks",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "Application and PostgreSQL workload processes are non-root. Application roots are read-only; upload/storage keys are validated and no app ACL utility invocation exists. PostgreSQL startup operates on operator-owned volume paths, not tenant-controlled host paths. No stable compatible trixie package fix is reported.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "postgres",
+      "cve": "CVE-2025-69720",
+      "packages": [
+        [
+          "libncursesw6",
+          "6.5+20250216-2"
+        ],
+        [
+          "libtinfo6",
+          "6.5+20250216-2"
+        ],
+        [
+          "ncurses-base",
+          "6.5+20250216-2"
+        ],
+        [
+          "ncurses-bin",
+          "6.5+20250216-2"
+        ]
+      ],
+      "disposition": "NOT_REACHABLE",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "infocmp terminfo inspection",
+      "reachability": "No invocation or terminfo-input path in the application, worker, PostgreSQL server or supplied startup/configuration scripts. infocmp remains installed; this is a functionality reachability disposition, not package absence.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "Processing attacker-controlled terminfo data with infocmp",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "No invocation or terminfo-input path in the application, worker, PostgreSQL server or supplied startup/configuration scripts. infocmp remains installed; this is a functionality reachability disposition, not package absence.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "postgres",
+      "cve": "CVE-2026-9538",
+      "packages": [
+        [
+          "libperl5.40",
+          "5.40.1-6+deb13u1"
+        ],
+        [
+          "perl",
+          "5.40.1-6+deb13u1"
+        ],
+        [
+          "perl-base",
+          "5.40.1-6+deb13u1"
+        ],
+        [
+          "perl-modules-5.40",
+          "5.40.1-6+deb13u1"
+        ]
+      ],
+      "disposition": "NOT_REACHABLE",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "Archive::Tar Perl archive processing",
+      "reachability": "Archive::Tar remains in the full inherited Perl installation. PostgreSQL/entrypoint/cluster management do not extract attacker-controlled tar through it; application uploads do not invoke Perl. Trusted operator Perl archive operations are outside this application workflow and require separate review.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "Processing attacker-controlled tar archives using Archive::Tar",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "Archive::Tar remains in the full inherited Perl installation. PostgreSQL/entrypoint/cluster management do not extract attacker-controlled tar through it; application uploads do not invoke Perl. Trusted operator Perl archive operations are outside this application workflow and require separate review.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "postgres",
+      "cve": "CVE-2026-16742",
+      "packages": [
+        [
+          "libsystemd0",
+          "257.13-1~deb13u1"
+        ],
+        [
+          "libudev1",
+          "257.13-1~deb13u1"
+        ]
+      ],
+      "disposition": "NOT_PRESENT",
+      "runtime_presence": "Installed package retained; affected component absent",
+      "runtime_purpose": "systemd-homed privilege service",
+      "reachability": "The vulnerable systemd-homed executable and service are absent. libsystemd0/libudev1 remain installed as inherited shared libraries, which alone do not contain the affected homed workflow.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "systemd-homed processing attacker-controlled home identity records",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "The vulnerable systemd-homed executable and service are absent. libsystemd0/libudev1 remain installed as inherited shared libraries, which alone do not contain the affected homed workflow.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "postgres",
+      "cve": "CVE-2026-6653",
+      "packages": [
+        [
+          "libxml2",
+          "2.12.7+dfsg+really2.9.14-2.1+deb13u3"
+        ]
+      ],
+      "disposition": "NOT_REACHABLE",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "PostgreSQL optional XML parsing library",
+      "reachability": "PostgreSQL retains SQL/XML capability, but the MedSynth schema has no XML columns and routes use bound ORM/static SQL without XML casts, XML functions or arbitrary SQL endpoints. Uploaded CSV/JSON bytes are stored as ordinary objects/structured values, not passed to libxml2. Direct privileged SQL access is outside this application-path disposition and requires re-review if exposed to untrusted users.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "Crafted XML reaching xmlParseInternalSubset via a SQL/XML operation",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "PostgreSQL retains SQL/XML capability, but the MedSynth schema has no XML columns and routes use bound ORM/static SQL without XML casts, XML functions or arbitrary SQL endpoints. Uploaded CSV/JSON bytes are stored as ordinary objects/structured values, not passed to libxml2. Direct privileged SQL access is outside this application-path disposition and requires re-review if exposed to untrusted users.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "postgres",
+      "cve": "CVE-2026-74860",
+      "packages": [
+        [
+          "libxml2",
+          "2.12.7+dfsg+really2.9.14-2.1+deb13u3"
+        ]
+      ],
+      "disposition": "NOT_PRESENT",
+      "runtime_presence": "Installed package retained; affected component absent",
+      "runtime_purpose": "optional libxml2 Python SAX binding",
+      "reachability": "No libxml2mod Python binding is present in the PostgreSQL runtime. PostgreSQL native libxml2 is not the vulnerable Python SAX callback component.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "libxml2 Python bindings with a crafted DTD enumeration callback",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "No libxml2mod Python binding is present in the PostgreSQL runtime. PostgreSQL native libxml2 is not the vulnerable Python SAX callback component.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "postgres",
+      "cve": "CVE-2026-86138",
+      "packages": [
+        [
+          "libxml2",
+          "2.12.7+dfsg+really2.9.14-2.1+deb13u3"
+        ]
+      ],
+      "disposition": "NOT_REACHABLE",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "libxml2 qualified-name dictionary",
+      "reachability": "No application path passes XML or XML-qualified names to PostgreSQL/libxml2; no XML column, arbitrary SQL endpoint or XML function call is present. Direct trusted database operators remain able to invoke SQL/XML and are outside this scoped assertion.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "Attacker-sized XML names reaching xmlDictAddQString",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "No application path passes XML or XML-qualified names to PostgreSQL/libxml2; no XML column, arbitrary SQL endpoint or XML function call is present. Direct trusted database operators remain able to invoke SQL/XML and are outside this scoped assertion.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "postgres",
+      "cve": "CVE-2026-86139",
+      "packages": [
+        [
+          "libxml2",
+          "2.12.7+dfsg+really2.9.14-2.1+deb13u3"
+        ]
+      ],
+      "disposition": "NOT_REACHABLE",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "libxml2 URI escaping",
+      "reachability": "The application performs no PostgreSQL SQL/XML URI escaping and provides no arbitrary SQL/XML API. Schema/source review and tenant tests apply to this application path, not unrelated database clients.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "Oversized attacker-controlled strings reaching xmlURIEscapeStr",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "The application performs no PostgreSQL SQL/XML URI escaping and provides no arbitrary SQL/XML API. Schema/source review and tenant tests apply to this application path, not unrelated database clients.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "postgres",
+      "cve": "CVE-2026-86140",
+      "packages": [
+        [
+          "libxml2",
+          "2.12.7+dfsg+really2.9.14-2.1+deb13u3"
+        ]
+      ],
+      "disposition": "NOT_REACHABLE",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "libxml2 DTD element diagnostics",
+      "reachability": "The application does not parse or validate XML DTDs in PostgreSQL; parameterized queries and the non-XML schema prevent uploaded values being interpreted as SQL/XML.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "Crafted XML DTD element formatting through xmlSnprintfElements",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "The application does not parse or validate XML DTDs in PostgreSQL; parameterized queries and the non-XML schema prevent uploaded values being interpreted as SQL/XML.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "postgres",
+      "cve": "CVE-2026-86142",
+      "packages": [
+        [
+          "libxml2",
+          "2.12.7+dfsg+really2.9.14-2.1+deb13u3"
+        ]
+      ],
+      "disposition": "NOT_REACHABLE",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "libxml2 XPointer evaluation",
+      "reachability": "No XPointer/XML evaluation endpoint, column or SQL operation is provided by the application. Trusted direct SQL access is not asserted safe.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "Oversized XPointer input reaching xmlXPtrEvalXPtrPart",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "No XPointer/XML evaluation endpoint, column or SQL operation is provided by the application. Trusted direct SQL access is not asserted safe.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "postgres",
+      "cve": "CVE-2026-86143",
+      "packages": [
+        [
+          "libxml2",
+          "2.12.7+dfsg+really2.9.14-2.1+deb13u3"
+        ]
+      ],
+      "disposition": "NOT_REACHABLE",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "libxml2 XML output callback lengths",
+      "reachability": "MedSynth generates governance HTML/JSON through its own reporting code, not PostgreSQL/libxml2 XML output callbacks. No SQL/XML output query is provided.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "Oversized XML output reaching affected write callbacks",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "MedSynth generates governance HTML/JSON through its own reporting code, not PostgreSQL/libxml2 XML output callbacks. No SQL/XML output query is provided.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "postgres",
+      "cve": "CVE-2026-86144",
+      "packages": [
+        [
+          "libxml2",
+          "2.12.7+dfsg+really2.9.14-2.1+deb13u3"
+        ]
+      ],
+      "disposition": "NOT_REACHABLE",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "libxml2 XInclude processing",
+      "reachability": "The application has no XInclude parser or PostgreSQL XML/XInclude workflow. Data upload/report generation does not call that functionality; direct SQL clients require separate review.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "XInclude resource loading with incorrectly propagated parseFlags",
+      "compensating_controls": "Fresh supplied fixture; loopback-only published ports; generated credentials; non-root workload; no-new-privileges; no untrusted direct service API/SQL credentials",
+      "rationale": "The application has no XInclude parser or PostgreSQL XML/XInclude workflow. Data upload/report generation does not call that functionality; direct SQL clients require separate review.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "worker",
+      "cve": "CVE-2026-76642",
+      "packages": [
+        [
+          "bsdutils",
+          "1:2.41.5-0+deb13u1"
+        ],
+        [
+          "libblkid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "liblastlog2-2",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libmount1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libsmartcols1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libuuid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "login",
+          "1:4.16.0-2+really2.41.5-0+deb13u1"
+        ],
+        [
+          "mount",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "util-linux",
+          "2.41.5-0+deb13u1"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "mount helper privilege flow",
+      "reachability": "The supplied containers have no SYS_ADMIN/host-namespace authority or tenant-authorized fstab entries. Workload processes are non-root and no-new-privileges prevents setuid elevation. The application does not invoke mount helpers.",
+      "privilege_required": "Authorized mount helper execution and vulnerable failure flow",
+      "attack_preconditions": "Authorized mount helper execution and vulnerable failure flow",
+      "compensating_controls": "UID10001; read-only root; capabilities dropped; no-new-privileges; validated storage paths",
+      "rationale": "The supplied containers have no SYS_ADMIN/host-namespace authority or tenant-authorized fstab entries. Workload processes are non-root and no-new-privileges prevents setuid elevation. The application does not invoke mount helpers.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "worker",
+      "cve": "CVE-2026-78408",
+      "packages": [
+        [
+          "bsdutils",
+          "1:2.41.5-0+deb13u1"
+        ],
+        [
+          "libblkid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "liblastlog2-2",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libmount1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libsmartcols1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libuuid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "login",
+          "1:4.16.0-2+really2.41.5-0+deb13u1"
+        ],
+        [
+          "mount",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "util-linux",
+          "2.41.5-0+deb13u1"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "nsenter cgroup entry utility",
+      "reachability": "The option is present, but no nsenter invocation, privileged root descriptor or host cgroup/namespace authority is provided by MedSynth. Workload processes are non-root with no-new-privileges and no SYS_ADMIN. This is mitigation, not absence of nsenter.",
+      "privilege_required": "Privileged nsenter --join-cgroup execution with exploitable inherited descriptors",
+      "attack_preconditions": "Privileged nsenter --join-cgroup execution with exploitable inherited descriptors",
+      "compensating_controls": "UID10001; read-only root; capabilities dropped; no-new-privileges; validated storage paths",
+      "rationale": "The option is present, but no nsenter invocation, privileged root descriptor or host cgroup/namespace authority is provided by MedSynth. Workload processes are non-root with no-new-privileges and no SYS_ADMIN. This is mitigation, not absence of nsenter.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "worker",
+      "cve": "CVE-2026-78409",
+      "packages": [
+        [
+          "bsdutils",
+          "1:2.41.5-0+deb13u1"
+        ],
+        [
+          "libblkid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "liblastlog2-2",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libmount1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libsmartcols1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libuuid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "login",
+          "1:4.16.0-2+really2.41.5-0+deb13u1"
+        ],
+        [
+          "mount",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "util-linux",
+          "2.41.5-0+deb13u1"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "X-mount.subdir path handling",
+      "reachability": "No user-authorized fstab subdirectory mounts, SYS_ADMIN or host namespace access are supplied. Non-root workloads and no-new-privileges restrict mount authority. The vulnerability is retained rather than assumed absent on a particular kernel.",
+      "privilege_required": "Mount authority with attacker-controlled intermediate symlinks in configured subdirectory mounts",
+      "attack_preconditions": "Mount authority with attacker-controlled intermediate symlinks in configured subdirectory mounts",
+      "compensating_controls": "UID10001; read-only root; capabilities dropped; no-new-privileges; validated storage paths",
+      "rationale": "No user-authorized fstab subdirectory mounts, SYS_ADMIN or host namespace access are supplied. Non-root workloads and no-new-privileges restrict mount authority. The vulnerability is retained rather than assumed absent on a particular kernel.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "worker",
+      "cve": "CVE-2026-78410",
+      "packages": [
+        [
+          "bsdutils",
+          "1:2.41.5-0+deb13u1"
+        ],
+        [
+          "libblkid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "liblastlog2-2",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libmount1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libsmartcols1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "libuuid1",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "login",
+          "1:4.16.0-2+really2.41.5-0+deb13u1"
+        ],
+        [
+          "mount",
+          "2.41.5-0+deb13u1"
+        ],
+        [
+          "util-linux",
+          "2.41.5-0+deb13u1"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "restricted bind mount ownership validation",
+      "reachability": "No relevant fstab bind mount authorization or SYS_ADMIN is supplied; non-root workloads cannot obtain mount privilege through setuid under no-new-privileges. Application storage paths do not expose host mount configuration.",
+      "privilege_required": "Mount authority and concurrent inode ownership/mode replacement",
+      "attack_preconditions": "Mount authority and concurrent inode ownership/mode replacement",
+      "compensating_controls": "UID10001; read-only root; capabilities dropped; no-new-privileges; validated storage paths",
+      "rationale": "No relevant fstab bind mount authorization or SYS_ADMIN is supplied; non-root workloads cannot obtain mount privilege through setuid under no-new-privileges. Application storage paths do not expose host mount configuration.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "worker",
+      "cve": "CVE-2026-54369",
+      "packages": [
+        [
+          "libacl1",
+          "2.3.2-2+b1"
+        ]
+      ],
+      "disposition": "MITIGATED",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "inherited ACL library used by OS utilities",
+      "reachability": "Application and PostgreSQL workload processes are non-root. Application roots are read-only; upload/storage keys are validated and no app ACL utility invocation exists. PostgreSQL startup operates on operator-owned volume paths, not tenant-controlled host paths. No stable compatible trixie package fix is reported.",
+      "privilege_required": "A privileged ACL pathname operation concurrent with attacker-controlled symlinks",
+      "attack_preconditions": "A privileged ACL pathname operation concurrent with attacker-controlled symlinks",
+      "compensating_controls": "UID10001; read-only root; capabilities dropped; no-new-privileges; validated storage paths",
+      "rationale": "Application and PostgreSQL workload processes are non-root. Application roots are read-only; upload/storage keys are validated and no app ACL utility invocation exists. PostgreSQL startup operates on operator-owned volume paths, not tenant-controlled host paths. No stable compatible trixie package fix is reported.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "worker",
+      "cve": "CVE-2025-69720",
+      "packages": [
+        [
+          "libncursesw6",
+          "6.5+20250216-2"
+        ],
+        [
+          "libtinfo6",
+          "6.5+20250216-2"
+        ],
+        [
+          "ncurses-base",
+          "6.5+20250216-2"
+        ],
+        [
+          "ncurses-bin",
+          "6.5+20250216-2"
+        ]
+      ],
+      "disposition": "NOT_REACHABLE",
+      "runtime_presence": "Installed package retained; affected component present or inherited; scoped review applies",
+      "runtime_purpose": "infocmp terminfo inspection",
+      "reachability": "No invocation or terminfo-input path in the application, worker, PostgreSQL server or supplied startup/configuration scripts. infocmp remains installed; this is a functionality reachability disposition, not package absence.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "Processing attacker-controlled terminfo data with infocmp",
+      "compensating_controls": "UID10001; read-only root; capabilities dropped; no-new-privileges; validated storage paths",
+      "rationale": "No invocation or terminfo-input path in the application, worker, PostgreSQL server or supplied startup/configuration scripts. infocmp remains installed; this is a functionality reachability disposition, not package absence.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "worker",
+      "cve": "CVE-2026-16742",
+      "packages": [
+        [
+          "libsystemd0",
+          "257.13-1~deb13u1"
+        ],
+        [
+          "libudev1",
+          "257.13-1~deb13u1"
+        ]
+      ],
+      "disposition": "NOT_PRESENT",
+      "runtime_presence": "Installed package retained; affected component absent",
+      "runtime_purpose": "systemd-homed privilege service",
+      "reachability": "The vulnerable systemd-homed executable and service are absent. libsystemd0/libudev1 remain installed as inherited shared libraries, which alone do not contain the affected homed workflow.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "systemd-homed processing attacker-controlled home identity records",
+      "compensating_controls": "UID10001; read-only root; capabilities dropped; no-new-privileges; validated storage paths",
+      "rationale": "The vulnerable systemd-homed executable and service are absent. libsystemd0/libudev1 remain installed as inherited shared libraries, which alone do not contain the affected homed workflow.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    },
+    {
+      "image": "worker",
+      "cve": "CVE-2026-9538",
+      "packages": [
+        [
+          "perl-base",
+          "5.40.1-6+deb13u1"
+        ]
+      ],
+      "disposition": "NOT_PRESENT",
+      "runtime_presence": "Installed package retained; affected component absent",
+      "runtime_purpose": "Archive::Tar Perl archive processing",
+      "reachability": "The API/worker perl-base installation does not include Archive::Tar. The module load and filesystem absence probes are recorded; no arbitrary-archive Perl execution exists.",
+      "privilege_required": "No application-exposed path; direct operator authority outside reviewed scope",
+      "attack_preconditions": "Processing attacker-controlled tar archives using Archive::Tar",
+      "compensating_controls": "UID10001; read-only root; capabilities dropped; no-new-privileges; validated storage paths",
+      "rationale": "The API/worker perl-base installation does not include Archive::Tar. The module load and filesystem absence probes are recorded; no arbitrary-archive Perl execution exists.",
+      "evidence": "docs/SECURITY_SCAN_REVIEW.md#individual-closure-dispositions; raw six-image scans and exact-image runtime/model/fixture proofs in required CI artifacts",
+      "review_date": "2026-11-06"
+    }
+  ]
 }

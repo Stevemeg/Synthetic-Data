@@ -16,6 +16,7 @@ services:
       timeout: 3s
       retries: 20
     restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
 
 volumes:
   postgres_data:
