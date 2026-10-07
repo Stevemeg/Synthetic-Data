@@ -89,7 +89,7 @@ python -m venv .venv
 Copy-Item .env.example .env
 ```
 
-Set a newly generated POSTGRES_PASSWORD in ignored .env before starting Compose. No password is committed. Generate one using `python -c "import secrets; print(secrets.token_urlsafe(32))"`. Preserve an existing .env rather than overwriting it. Linux/macOS use .venv/bin/python and cp; those platforms were not tested.
+Set a newly generated POSTGRES_PASSWORD in ignored .env before starting Compose. No password is committed. Generate one using `python -c "import secrets; print(secrets.token_urlsafe(32))"`. Preserve an existing .env rather than overwriting it. Linux/macOS use .venv/bin/python and cp. GitHub-hosted Linux CI verifies the backend, security and authenticated container workflows; macOS was not tested.
 
 ```powershell
 docker compose up -d postgres
@@ -259,4 +259,4 @@ security/dependency checks and release artifacts are documented in
 settings have been applied automatically. [Project story](docs/PROJECT_STORY.md)
 records the technical evolution and current trade-offs.
 
-Current release status: **Phase 6 closure verified** by actual GitHub-hosted CI and individual container-CVE dispositions. An RC must use the exact commit with all four `quality` jobs green and its `runtime-supply-chain-review` artifact; see [verification](docs/PHASE_6_VERIFICATION.md) and [security review](docs/SECURITY_SCAN_REVIEW.md). Remaining vulnerabilities and configuration limits are disclosed; this is no healthcare/regulatory certification. No release tag has been created.
+Current release status: **Phase 6 closure verified** by actual GitHub-hosted CI and individual container-CVE dispositions. An RC must use the exact commit with all four `quality` jobs green and its `runtime-supply-chain-review` artifact; see [verification](docs/PHASE_6_VERIFICATION.md) and [security review](docs/SECURITY_SCAN_REVIEW.md). Remaining vulnerabilities and configuration limits are disclosed; this is no healthcare/regulatory certification. Published candidates are listed under [GitHub releases](https://github.com/Stevemeg/Synthetic-Data/releases).
