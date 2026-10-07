@@ -6,7 +6,7 @@ SQLAlchemy==2.0.48
 alembic==1.18.4
 psycopg[binary]==3.3.3
 python-multipart==0.0.32
-numpy==1.26.4
+numpy==2.5.3
 pandas==2.2.3
 python-dotenv==1.2.2
 Pillow==12.3.0
