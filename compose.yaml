@@ -1,6 +1,7 @@
 services:
   postgres:
-    image: postgres:16-bookworm
+    image: medsynth-postgres-development:16
+    build: { context: ., dockerfile: ops/Dockerfile.postgres }
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-medsynth}
       POSTGRES_USER: ${POSTGRES_USER:-medsynth}

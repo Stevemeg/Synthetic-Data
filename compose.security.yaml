@@ -1,7 +1,7 @@
 # Development-only identity/object-store verification. Never expose these ports publicly.
 services:
   keycloak:
-    image: quay.io/keycloak/keycloak:26.8.0
+    image: quay.io/keycloak/keycloak:26.8.0@sha256:b0f60d489d51c5d113390bdf5461d4c06e6051be026c05549f2e1e10ec352bcc
     command: ["start-dev", "--import-realm"]
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${OIDC_DEV_ADMIN_USER:-development-operator}
@@ -13,8 +13,14 @@ services:
       - ./ops/keycloak/realm.json:/opt/keycloak/data/import/realm.json:ro
       - keycloak_dev_data:/opt/keycloak/data
     mem_limit: 1g
+    healthcheck:
+      test: ["CMD", "/bin/bash", "-c", "{ printf 'HEAD /health/ready HTTP/1.0\\r\\n\\r\\n' >&0; grep 'HTTP/1.0 200'; } 0<>/dev/tcp/localhost/9000"]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+      start_period: 20s
   minio:
-    image: medsynth-minio-development:2025-10-15
+    image: medsynth-minio-development:7aac2a2
     build: { context: ., dockerfile: ops/minio/Dockerfile }
     command: ["server", "/data", "--console-address", ":9001"]
     environment:

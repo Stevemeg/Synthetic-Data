@@ -1,9 +1,9 @@
-FROM python:3.11-slim-trixie AS dependencies
+FROM python:3.11-slim-trixie@sha256:0dd364ba7e10242f07755449e3a3d0e35f9efd987952737b90def6709ab0c5ce AS dependencies
 WORKDIR /build
 COPY backend/requirements*.txt ./
 RUN python -m venv /opt/venv && /opt/venv/bin/python -m pip install --upgrade pip==26.2.1 setuptools==83.0.0 && /opt/venv/bin/pip install --no-cache-dir --no-deps https://download.pytorch.org/whl/cpu/torch-2.13.0%2Bcpu-cp311-cp311-manylinux_2_28_x86_64.whl && /opt/venv/bin/pip install --no-cache-dir -r requirements-evaluation.txt && /opt/venv/bin/pip install --no-cache-dir --upgrade setuptools==83.0.0 wheel==0.46.2 urllib3==2.8.0 msgpack==1.2.1 jaraco.context==6.1.0
 
-FROM python:3.11-slim-trixie AS runtime
+FROM python:3.11-slim-trixie@sha256:0dd364ba7e10242f07755449e3a3d0e35f9efd987952737b90def6709ab0c5ce AS runtime
 RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/* && useradd --uid 10001 --create-home medsynth
 COPY --from=dependencies /opt/venv /opt/venv
 # Installation tooling is unnecessary in the immutable runtime and carries vendored packages.

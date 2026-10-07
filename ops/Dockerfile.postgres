@@ -1,0 +1,14 @@
+# Preserve the maintained vendor PostgreSQL 16 runtime and entrypoint.
+# Rebuild its gosu 1.19 helper with patched Go; use the newer vendor trixie base.
+FROM golang:1.26-bookworm@sha256:dc9ad6c05acc7a88e5b71bde60a5fe3bd4b9f0db209011711b464107438a8107 AS gosu-build
+ENV CGO_ENABLED=0 GOTOOLCHAIN=local
+RUN git init /src && git -C /src fetch --depth=1 https://github.com/tianon/gosu.git 6456aaa0f3c854d199d0f037f068eb97515b7513 && git -C /src checkout --detach FETCH_HEAD
+WORKDIR /src
+RUN go build -trimpath -ldflags="-s -w" -o /gosu .
+
+FROM postgres:16-trixie@sha256:65b16a8b326e0cfbdf33fa7e783f2a0cb352a61448616ccccfd616ef42aa0f65
+# Vendor repository-key import tools are build-only. A simulated purge confirmed
+# exactly these seven removals, with no PostgreSQL/native runtime removal.
+RUN apt-get purge -y gnupg gnupg-l10n gpg gpg-agent gpgconf gpgsm dirmngr && rm -rf /var/lib/apt/lists/*
+COPY --from=gosu-build /gosu /usr/local/bin/gosu
+RUN gosu postgres id && gosu nobody true
