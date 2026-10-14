@@ -6,7 +6,7 @@ RUN git init /src && git -C /src fetch --depth=1 https://github.com/tianon/gosu.
 WORKDIR /src
 RUN go build -trimpath -ldflags="-s -w" -o /gosu .
 
-FROM postgres:16-trixie@sha256:65b16a8b326e0cfbdf33fa7e783f2a0cb352a61448616ccccfd616ef42aa0f65
+FROM postgres:18-trixie@sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336
 # Vendor repository-key import tools are build-only. A simulated purge confirmed
 # exactly these seven removals, with no PostgreSQL/native runtime removal.
 RUN apt-get purge -y gnupg gnupg-l10n gpg gpg-agent gpgconf gpgsm dirmngr && rm -rf /var/lib/apt/lists/*
