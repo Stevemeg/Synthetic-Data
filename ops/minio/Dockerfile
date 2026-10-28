@@ -9,7 +9,7 @@ WORKDIR /src
 # Target the modules with compatible security releases; compilation and real S3
 # regression gates must pass before this fixture can be accepted.
 RUN go get github.com/apache/thrift@v0.24.0 github.com/buger/jsonparser@v1.1.2 github.com/go-jose/go-jose/v4@v4.1.4 github.com/prometheus/prometheus@v0.311.3 github.com/rabbitmq/amqp091-go@v1.13.0 golang.org/x/crypto@v0.55.0 google.golang.org/grpc@v1.83.2 && go build -mod=mod -trimpath -buildvcs=true -o /minio . && go list -m all > /go-dependency-manifest.txt
-FROM alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+FROM alpine:3.24@sha256:be2656061b536c1883c4034790e21d0a09c5aaaf51968b89368a3c0371ea2c9a
 RUN apk add --no-cache ca-certificates curl && addgroup -g 10001 minio && adduser -D -u 10001 -G minio minio && mkdir /data && chown minio:minio /data
 COPY --from=build /minio /usr/local/bin/minio
 USER 10001:10001
